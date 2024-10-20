@@ -40,4 +40,7 @@ public class Favorite {
     @Column
     private String cardImageUrl;
 
+    @Column
+    private String cardSearchText;
+
 }

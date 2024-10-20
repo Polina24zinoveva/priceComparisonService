@@ -4,16 +4,13 @@ import com.example.priceComparisonService.dto.Card;
 import com.example.priceComparisonService.dto.CardContainer;
 import com.example.priceComparisonService.dto.User;
 import com.example.priceComparisonService.repositories.FavoritesRepository;
-import com.example.priceComparisonService.services.FavoritesService;
 import com.example.priceComparisonService.services.SearchService;
 import com.example.priceComparisonService.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 public class ResultSearchPageController {
 
     private static final Logger log = LoggerFactory.getLogger(ResultSearchPageController.class);
-    SearchService searchService = new SearchService();
+    SearchService searchService;
     UserService userService;
     FavoritesRepository favoritesRepository;
 
@@ -51,32 +49,40 @@ public class ResultSearchPageController {
             selectOzon = selectOzonMainPage;
         }
 
+        AtomicReference<String> searchingResultTitle = new AtomicReference<>(searchText);
+
         if ((selectWb && selectOzon) || (!selectWb && !selectOzon)){
+            selectWbMainPage = true;
+            selectOzonMainPage = true;
             selectWb = true;
             selectOzon = true;
             ExecutorService executor = Executors.newFixedThreadPool(2); // Создаем пул из двух потоков
 
             // Создаем задачи для выполнения в параллельных потоках
-            Callable<Void> wbTask = () -> {
-                searchService.connectToWb(searchText, cardContainer.getCards());
-                return null;
-            };
+            AtomicReference<String> searchingResultTitleWB = new AtomicReference<>("");
+            AtomicReference<String>  searchingResultTitleOzon = new AtomicReference<>("");
 
             Callable<Void> ozonTask = () -> {
-                searchService.connectToOzon(searchText, cardContainer.getCards());
+                searchingResultTitleWB.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
                 return null;
             };
+            Callable<Void> wbTask = () -> {
+                searchingResultTitleOzon.set(searchService.connectToWb(searchText, cardContainer.getCards()));
+                return null;
+            };
+            if (!searchingResultTitleWB.get().equals("")) searchingResultTitle = searchingResultTitleWB;
+            else searchingResultTitle = searchingResultTitleOzon;
 
 
             // Отправляем задачи на выполнение
-            Future<Void> wbFuture = executor.submit(wbTask);
             Future<Void> ozonFuture = executor.submit(ozonTask);
+            Future<Void> wbFuture = executor.submit(wbTask);
 
             try {
                 try {
                     // Получение результатов задач
-                    wbFuture.get();
                     ozonFuture.get();
+                    wbFuture.get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -88,9 +94,9 @@ public class ResultSearchPageController {
                 executor.shutdown();
             }
         } else if (selectWb) {
-            searchService.connectToWb(searchText, cardContainer.getCards());
+            searchingResultTitle.set(searchService.connectToWb(searchText, cardContainer.getCards()));
         } else if (selectOzon) {
-            searchService.connectToOzon(searchText, cardContainer.getCards());
+            searchingResultTitle.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
         }
 
         if (user != null){
@@ -109,7 +115,7 @@ public class ResultSearchPageController {
 
         session.setAttribute("selectWbMainPage", selectWbMainPage);
         session.setAttribute("selectOzonMainPage", selectOzonMainPage);
-        model.addAttribute("searchText", searchText);
+        session.setAttribute("searchText", searchingResultTitle);
 
         sortByDefault(session, model);
 
@@ -301,8 +307,8 @@ public class ResultSearchPageController {
 
     @PostMapping("/filters")
     public String filtersSelection(HttpSession session, Model model,
-                                   @RequestParam(name="wb", required = false) Boolean selectWb,
-                                   @RequestParam(name="ozon", required = false) Boolean selectOzon,
+                                   @RequestParam(name="wb", required = false, defaultValue = "false") Boolean selectWb,
+                                   @RequestParam(name="ozon", required = false, defaultValue = "false") Boolean selectOzon,
                                    @RequestParam(name = "minPrice", required = false) Integer minPrice,
                                    @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
                                    @RequestParam(name = "rating", required = false) Double rating,
@@ -312,13 +318,13 @@ public class ResultSearchPageController {
         List<Card> cards = (List<Card>) session.getAttribute("searchByDefault");
         String sort = (String) session.getAttribute("selectedSort");
 
-        if (selectWb != null || selectOzon != null){
-            if (selectWb == null){
+        if (selectWb || selectOzon){
+            if (!selectWb){
                 cards = cards.stream()
                         .filter(b -> !Objects.equals(b.getMarketplace(), "Wildberries"))
                         .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
             }
-            if (selectOzon == null){
+            if (!selectOzon){
                 cards = cards.stream()
                         .filter(b -> !Objects.equals(b.getMarketplace(), "Ozon"))
                         .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
@@ -330,8 +336,16 @@ public class ResultSearchPageController {
         }
 
         if (minPrice != null || maxPrice != null){
-            int  min = minPrice != null ? minPrice : 0;
-            int  max = maxPrice != null ? maxPrice : Integer.MAX_VALUE;
+            int  min = minPrice != null ? minPrice : (Integer) session.getAttribute("minPrice");
+            int  max = maxPrice != null ? maxPrice : (Integer) session.getAttribute("maxPrice");
+
+            cards = cards.stream()
+                    .filter(b -> b.getPrice() >= min && b.getPrice() <= max)
+                    .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+        }
+        else {
+            int  min = (Integer) session.getAttribute("minPrice");
+            int  max = (Integer) session.getAttribute("maxPrice");
 
             cards = cards.stream()
                     .filter(b -> b.getPrice() >= min && b.getPrice() <= max)
@@ -347,10 +361,17 @@ public class ResultSearchPageController {
         }
         else rating = 0.0;
 
-
         if (minReviews != null || maxReviews != null){
-            int  min = minReviews != null ? minReviews : 0;
-            int  max = maxReviews != null ? maxReviews : Integer.MAX_VALUE;
+            int  min = minReviews != null ? minReviews : (Integer) session.getAttribute("minReviews");
+            int  max = maxReviews != null ? maxReviews : (Integer) session.getAttribute("maxReviews");
+
+            cards = cards.stream()
+                    .filter(b -> b.getCountReviews() >= min && b.getCountReviews() <= max)
+                    .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+        }
+        else{
+            int  min = (Integer) session.getAttribute("minReviews");
+            int  max = (Integer) session.getAttribute("maxReviews");
 
             cards = cards.stream()
                     .filter(b -> b.getCountReviews() >= min && b.getCountReviews() <= max)
@@ -404,31 +425,37 @@ public class ResultSearchPageController {
         // Сохранение результатов поиска в сессии
         session.setAttribute("searchResults", cards);
 
+        model.addAttribute("selectedRating", rating);
+        session.setAttribute("selectedRating", rating);
+
         OptionalInt maxPriceFilteredArray = cards.stream()
                 .mapToInt(Card::getPrice)
                 .max();
         model.addAttribute("maxPrice", maxPriceFilteredArray.orElse(0));
-
         OptionalInt minPriceFilteredArray = cards.stream()
                 .mapToInt(Card::getPrice)
                 .min();
         model.addAttribute("minPrice", minPriceFilteredArray.orElse(0));
 
-        model.addAttribute("selectedRating", rating);
-        session.setAttribute("selectedRating", rating);
+        model.addAttribute("selectedSort", selectedSort);
+        session.setAttribute("selectedSort", selectedSort);
 
         OptionalInt maxReviewsFilteredArray = cards.stream()
                 .mapToInt(Card::getCountReviews)
                 .max();
         model.addAttribute("maxReviews", maxReviewsFilteredArray.orElse(0));
-
         OptionalInt minReviewsFilteredArray = cards.stream()
                 .mapToInt(Card::getCountReviews)
                 .min();
         model.addAttribute("minReviews", minReviewsFilteredArray.orElse(0));
 
-        model.addAttribute("selectedSort", selectedSort);
-        session.setAttribute("selectedSort", selectedSort);
+        if (!cards.isEmpty()){
+
+            session.setAttribute("maxPrice", maxPriceFilteredArray.orElse(0));
+            session.setAttribute("minPrice", minPriceFilteredArray.orElse(0));
+            session.setAttribute("maxReviews", maxReviewsFilteredArray.orElse(0));
+            session.setAttribute("minReviews", minReviewsFilteredArray.orElse(0));
+        }
 
         model.addAttribute("selectWb", selectWb);
         session.setAttribute("selectWb", selectWb);
@@ -441,6 +468,8 @@ public class ResultSearchPageController {
 
         model.addAttribute("selectOzonMainPage", selectOzonMainPage);
         session.setAttribute("selectOzonMainPage", selectOzonMainPage);
+
+        model.addAttribute("searchText", session.getAttribute("searchText"));
     }
 
 }

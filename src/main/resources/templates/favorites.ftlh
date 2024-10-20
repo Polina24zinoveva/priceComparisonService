@@ -109,13 +109,17 @@
         }
 
         .photo-container {
-            height: 25rem;
+            height: 25rem; /* фиксируем высоту контейнера */
+            display: flex;
+            justify-content: center; /* Центрирование по горизонтали */
+            align-items: center; /* Центрирование по вертикали */
         }
 
         .photo {
-            margin-top: 4px; /* Отступ сверху */
-            margin-bottom: 4px; /* Отступ снизу */
-            border-radius: 5px;
+            max-width: 100%; /* Ограничиваем ширину фото по ширине контейнера */
+            max-height: 100%; /* Ограничиваем высоту фото по высоте контейнера */
+            object-fit: contain; /* Сохраняем пропорции изображения */
+            border-radius: 5px; /* Закругляем углы */
         }
 
         .text-container {
@@ -300,7 +304,7 @@
                                                 </form>
 
                                                 <form action="/resultsSearch" method="post" onsubmit="show30SecProgressBar()">
-                                                    <input type="hidden" name="searchText" value="${card.cardName}">
+                                                    <input type="hidden" name="searchText" value="${card.cardSearchText}">
                                                     <button class="btn btn-card" type="submit">
                                                         <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">

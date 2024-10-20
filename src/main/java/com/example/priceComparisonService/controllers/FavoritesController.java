@@ -189,6 +189,7 @@ public class FavoritesController {
                             @RequestParam(name = "rating") Double rating,
                             @RequestParam(name = "countReviews") String countReviewsText,
                             @RequestParam(name = "imageUrl") String imageUrl,
+                            @RequestParam(name = "searchText") String searchText,
                             Model model) throws IOException {
 
         List<Favorite> favoritesList = favoritesRepository.findByUser(user);
@@ -201,7 +202,7 @@ public class FavoritesController {
         } else {
             int price = Integer.parseInt(priceText.replaceAll("\\p{Zs}",""));
             int countReviews = Integer.parseInt(countReviewsText.replaceAll("\\p{Zs}",""));
-            favoriteService.saveFavorite(user, name, marketplace, url, price, rating, countReviews, imageUrl);
+            favoriteService.saveFavorite(user, name, marketplace, url, price, rating, countReviews, imageUrl, searchText);
 
             session.setAttribute("message", "Успешно добавлено в избранное");
             log.info("Message: Успешно добавлено в избранное");

@@ -37,11 +37,15 @@ import static java.lang.Math.log;
 @Slf4j
 public class SearchService {
 
-    public void connectToWb(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
+    public String connectToWb(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
         System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
 
-        // Запуск ChromeDriver
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
 
         try {
             // Открытие сайта Wildberries
@@ -50,7 +54,7 @@ public class SearchService {
             log.info("Подключено к {}", "https://www.wildberries.ru/");
 
             // Инициализация WebDriverWait
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
             // Ожидание, пока поле поиска станет доступным
             WebElement searchBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("searchInput")));
@@ -66,6 +70,14 @@ public class SearchService {
             // Повторное получение элементов
             List<WebElement> productItems = driver.findElements(By.cssSelector(".product-card"));
 
+            String searchingResultTitle;
+            try {
+                searchingResultTitle = driver.findElement(By.className("searching-results__title")).getText();
+                searchingResultTitle = searchingResultTitle.substring(0, 1).toUpperCase() + searchingResultTitle.substring(1);
+            }
+            catch (Exception e){
+                searchingResultTitle = productName;
+            }
 
             // Обработка каждого товара
             for (WebElement item : productItems) {
@@ -104,10 +116,12 @@ public class SearchService {
                 cards.add(card);
             }
             log.info("Результат поиска на Wildberries готов");
+            return searchingResultTitle;
 
         } catch (Exception e) {
             e.printStackTrace();
             log.info("Ошибка в Wildberries");
+            return productName;
         } finally {
             // Закрытие браузера
             driver.quit();
@@ -115,7 +129,7 @@ public class SearchService {
     }
 
 
-    public void connectToOzon(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
+    public String connectToOzon(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
@@ -130,7 +144,7 @@ public class SearchService {
             log.info("Подключено к {}", "https://www.ozon.ru/");
 
             // Инициализация WebDriverWait
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
             // Ожидание, пока поле поиска станет доступным
             WebElement searchBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("text")));
@@ -147,6 +161,15 @@ public class SearchService {
             }
             catch (Exception e){
                 log.info("Ошибка в загрузке карточек товаров");
+            }
+
+            String searchingResultTitle;
+            try {
+                searchingResultTitle = driver.findElement(By.xpath("//*[@id=\"layoutPage\"]/div[1]/div[2]/div[1]/div/div[1]/div[1]/strong")).getText();
+                searchingResultTitle = searchingResultTitle.substring(0, 1).toUpperCase() + searchingResultTitle.substring(1);
+            }
+            catch (Exception e){
+                searchingResultTitle = productName;
             }
 
             // Обработка каждого товара
@@ -216,10 +239,12 @@ public class SearchService {
                 cards.add(card);
             }
             log.info("Результат поиска на Ozon готов");
+            return searchingResultTitle;
 
         } catch (Exception e) {
             e.printStackTrace();
             log.info("Ошибка в Ozon");
+            return productName;
         } finally {
             // Закрытие браузера
             driver.quit();
@@ -230,8 +255,12 @@ public class SearchService {
 
         System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
 
-        // Запуск ChromeDriver
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
 
         try {
             // Открытие сайта Wildberries
@@ -306,15 +335,6 @@ public class SearchService {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         try {
-            WebElement reloadButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".rb")));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", reloadButton);
-            log.info("Ozon: доступ ограничен");
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        try {
             // Ожидание загрузки результатов
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@style, 'width:100%')]")));
             WebElement webElement = driver.findElement(By.xpath("//div[contains(@style, 'width:100%')]"));
@@ -322,9 +342,19 @@ public class SearchService {
             // Название
             String name = webElement.findElement(By.cssSelector(".tsHeadline550Medium")).getText();
 
-
+            String priceText;
             // Цена
-            String priceText = webElement.findElements(By.xpath(".//span[contains(text(), '₽')]")).get(1).getText().replaceAll("[^\\d]", "");
+            try{
+                priceText = webElement.findElement(By.xpath("//*[@id=\"layoutPage\"]/div[1]/div[4]/div[3]/div[2]/div[1]/div[3]/div/div[1]/div/div/div[1]/div[2]/div/div[1]/span[1]")).getText().replaceAll("[^\\d]", "");
+            }
+            catch (Exception e){
+                try{
+                    priceText = webElement.findElement(By.xpath("//*[@id=\"layoutPage\"]/div[1]/div[4]/div[3]/div[2]/div[1]/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div[1]/span[1]")).getText().replaceAll("[^\\d]", "");
+                                                                                //*[@id="layoutPage"]/div[1]/div[4]/div[3]/div[2]/div[1]/div[2]/div/div[1]/div/div/div[1]/div[2]/div/div[1]/span[1]
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
             int price = 0;
             if (!priceText.isEmpty()) {
                 price = Integer.parseInt(priceText);

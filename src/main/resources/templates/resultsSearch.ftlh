@@ -158,13 +158,19 @@
 
 
         .photo-container {
-            height: 25rem;
+            height: 25rem; /* фиксируем высоту контейнера */
+            display: flex;
+            justify-content: center; /* Центрирование по горизонтали */
+            align-items: center; /* Центрирование по вертикали */
         }
+
         .photo {
-            margin-top: 4px; /* Отступ сверху */
-            margin-bottom: 4px; /* Отступ снизу */
-            border-radius: 5px;
+            max-width: 100%; /* Ограничиваем ширину фото по ширине контейнера */
+            max-height: 100%; /* Ограничиваем высоту фото по высоте контейнера */
+            object-fit: contain; /* Сохраняем пропорции изображения */
+            border-radius: 5px; /* Закругляем углы */
         }
+
         .text-container {
             height: 8rem;
         }
@@ -321,7 +327,7 @@
                                     <li>
                                         <#if selectWbMainPage == true>
                                             <div class="form-check sideMargin verticalMargin">
-                                                <input class="form-check-input" type="checkbox" name="wb" id="wb" value="true" <#if selectWb == true>checked</#if>>
+                                                <input class="form-check-input" type="checkbox" name="wb" id="wb" value="true" <#if selectWb?? && selectWb == true>checked</#if>>
                                                 <label class="form-check-label" for="wb">
                                                     Wildberries
                                                 </label>
@@ -329,7 +335,7 @@
                                         </#if>
                                         <#if selectOzonMainPage == true>
                                             <div class="form-check sideMargin verticalMargin">
-                                                <input class="form-check-input" type="checkbox" name="ozon" id="ozon" value="true" <#if selectOzon == true>checked</#if>>
+                                                <input class="form-check-input" type="checkbox" name="ozon" id="ozon" value="true" <#if selectOzon?? && selectOzon == true>checked</#if>>
                                                 <label class="form-check-label" for="ozon">
                                                     Ozon
                                                 </label>
@@ -471,6 +477,7 @@
                                                         <input type="hidden" name="rating" value="${card.rating?string("0.0")?replace(",", ".")}">
                                                         <input type="hidden" name="countReviews" value="${card.countReviews}">
                                                         <input type="hidden" name="imageUrl" value="${card.imageUrl}">
+                                                        <input type="hidden" name="searchText" value="${searchText}">
                                                         <button type="submit" class="btn btn-card">
                                                             <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">

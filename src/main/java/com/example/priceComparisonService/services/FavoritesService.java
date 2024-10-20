@@ -24,7 +24,7 @@ public class FavoritesService {
 
 
     public boolean saveFavorite(User user, String name, String marketplace, String url,
-                                int price, double rating, int countReviews, String imageUrl) {
+                                int price, double rating, int countReviews, String imageUrl, String searchText) {
 
 
         if (favoriteRepository.existsByUserAndCardUrl(user, url)) {
@@ -40,6 +40,7 @@ public class FavoritesService {
         favorite.setCardRating(rating);
         favorite.setCardCountReviews(countReviews);
         favorite.setCardImageUrl(imageUrl);
+        favorite.setCardSearchText(searchText);
 
         favoriteRepository.save(favorite);
         return true;
