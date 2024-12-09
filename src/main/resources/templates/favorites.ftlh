@@ -224,7 +224,7 @@
             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                 <form action="/main" method="get">
                     <button type="submit" class="btn btn-mainPage me-md-2" style="background: none; border: none; padding: 0; font-size: 2rem; color: #ffffff; cursor: pointer; text-align: left;">
-                        Сервис для сравнения цен на товары
+                        Сервис для сравнения цен на маркетплейсах
                     </button>
                 </form>
 

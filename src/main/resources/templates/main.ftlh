@@ -73,7 +73,7 @@
             </div>
 
             <div class="about-service-container">
-                <h2 style="color: #ffffff;">Сервис для сравнения цен на товары</h2>
+                <h2 style="color: #ffffff;">Сервис для сравнения цен на маркетплейсах</h2>
                 <figcaption class="blockquote-footer" style="padding-top: 10px; font-size: 18px; color: #E8F2E8;">
                     <cite>это простой способ сэкономить деньги и время на покупках</cite>
                 </figcaption>
@@ -96,6 +96,8 @@
 
                         <div id="wbMainPage" class="marketplace-background" data-name="wbMainPage">Wildberries</div>
                         <div id="ozonMainPage" class="marketplace-background" style="margin-left:7px;" data-name="ozonMainPage">Ozon</div>
+                        <div id="ymMainPage" class="marketplace-background" style="margin-left:7px;" data-name="ymMainPage">Яндекс Маркет</div>
+                        <div id="mmMainPage" class="marketplace-background" style="margin-left:7px;" data-name="mmMainPage">Магнит Маркет</div>
                     </div>
                 </form>
             </div>

@@ -132,20 +132,64 @@
             width: 100%;
             height: 46px;
             margin-top: 1rem;
-            border-color: #80AF81;
-            background-color: #80AF81;
             font-size: 18px;
-            color: #ffffff;
             position: relative;
             overflow: hidden;
             transition: width 0.3s ease;
         }
 
-        .btn-card:hover {
-            color: #80AF81;
-            border-color: #80AF81;
-            background-color: rgba(214, 239, 216, 0.5);
+        .btn-card-wb {
+            border-color: #A864DD;
+            background-color: #A864DD;
+            color: #ffffff;
         }
+
+        .btn-card-ozon {
+            border-color: #5C91FE;
+            background-color: #5C91FE;
+            color: #ffffff;
+        }
+
+        .btn-card-ym {
+            border-color: #FF9A66;
+            background-color: #FF9A66;
+            color: #ffffff;
+        }
+
+        .btn-card-mm {
+            border-color: #FF6F61;
+            background-color: #FF6F61;
+            color: #ffffff;
+        }
+
+        .btn-card:hover {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-card-wb:hover {
+            border-color: #8E12DD;
+            background-color: #8E12DD;
+            color: #ffffff;
+        }
+
+        .btn-card-ozon:hover {
+            border-color: #005CFE;
+            background-color: #005CFE;
+            color: #ffffff;
+        }
+
+        .btn-card-ym:hover {
+            border-color: #FCE000;
+            background-color: #FCE000;
+            color: #ffffff;
+        }
+
+        .btn-card-mm:hover {
+            border-color: #FF462D;
+            background-color: #FF462D;
+            color: #ffffff;
+        }
+
 
         .card-container {
             width: 18rem;
@@ -229,7 +273,7 @@
             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                 <form action="/main" method="get">
                     <button type="submit" class="btn btn-mainPage me-md-2" style="background: none; border: none; padding: 0; font-size: 2rem; color: #ffffff; cursor: pointer; text-align: left;">
-                        Сервис для сравнения цен на товары
+                        Сервис для сравнения цен на маркетплейсах
                     </button>
                 </form>
 
@@ -478,7 +522,12 @@
                                                         <input type="hidden" name="countReviews" value="${card.countReviews}">
                                                         <input type="hidden" name="imageUrl" value="${card.imageUrl}">
                                                         <input type="hidden" name="searchText" value="${searchText}">
-                                                        <button type="submit" class="btn btn-card">
+
+                                                        <button type="submit"class="btn btn-card
+                                                                <#if card.marketplace == "Wildberries">btn-card-wb</#if>
+                                                                <#if card.marketplace == "Ozon">btn-card-ozon</#if>
+                                                                <#if card.marketplace == "Яндекс Маркет">btn-card-ym</#if>
+                                                                <#if card.marketplace == "Магнит Маркет">btn-card-mm</#if>">
                                                             <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
                                                                     <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
@@ -489,7 +538,11 @@
                                                     </form>
                                                     <form id="addedFav" onclick="addOrAdded()" action="/removeFromFavoritesInResultSearchPage" method="post" style="display:none;">
                                                         <input type="hidden" name="url" value="${card.url}">
-                                                        <button type="submit" class="btn btn-card">
+                                                        <button type="submit" class="btn btn-card
+                                                            <#if card.marketplace == "Wildberries">btn-card-wb</#if>
+                                                            <#if card.marketplace == "Ozon">btn-card-ozon</#if>
+                                                            <#if card.marketplace == "Яндекс Маркет">btn-card-ym</#if>
+                                                            <#if card.marketplace == "Магнит Маркет">btn-card-mm</#if>">
                                                             <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                                                                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
@@ -508,7 +561,11 @@
                                                         <input type="hidden" name="rating" value="${card.rating?string("0.0")?replace(",", ".")}">
                                                         <input type="hidden" name="countReviews" value="${card.countReviews}">
                                                         <input type="hidden" name="imageUrl" value="${card.imageUrl}">
-                                                        <button type="submit" class="btn btn-card">
+                                                        <button type="submit"class="btn btn-card
+                                                            <#if card.marketplace == "Wildberries">btn-card-wb</#if>
+                                                            <#if card.marketplace == "Ozon">btn-card-ozon</#if>
+                                                            <#if card.marketplace == "Яндекс Маркет">btn-card-ym</#if>
+                                                            <#if card.marketplace == "Магнит Маркет">btn-card-mm</#if>">
                                                             <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
                                                                     <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
@@ -519,7 +576,11 @@
                                                     </form>
                                                     <form id="addedFav" onclick="addOrAdded()" action="/removeFromFavoritesInResultSearchPage" method="post">
                                                         <input type="hidden" name="url" value="${card.url}">
-                                                        <button type="submit" class="btn btn-card">
+                                                        <button type="submit"class="btn btn-card
+                                                            <#if card.marketplace == "Wildberries">btn-card-wb</#if>
+                                                            <#if card.marketplace == "Ozon">btn-card-ozon</#if>
+                                                            <#if card.marketplace == "Яндекс Маркет">btn-card-ym</#if>
+                                                            <#if card.marketplace == "Магнит Маркет">btn-card-mm</#if>">
                                                             <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                                                                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>

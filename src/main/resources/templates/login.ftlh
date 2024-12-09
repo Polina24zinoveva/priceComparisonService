@@ -8,17 +8,82 @@
     <link rel="icon" href="diploma_icon.png" type="image/x-icon">
 
     <style>
-        body{
+        .body-login{
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 90vh;
+            background-color: #ffffff;
+            border-top-left-radius: 50px;  /* Закругление левого верхнего угла */
+            border-top-right-radius: 50px; /* Закругление правого верхнего угла */
         }
+
+        .color-background {
+            display: grid;
+            background: #7FB77E;
+        }
+
+        .container-custom{
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            margin-left: 17rem;
+            margin-right: 4rem;
+        }
+
+
+        .btn-favorites {
+            width: 54px;
+            height: 54px;
+            font-size: 18px;
+            border-radius: 40px;
+            color: #FFFFFF;
+            border: 1px solid #FFFFFF;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.35);
+
+
+            display: flex;                /* Используем Flexbox */
+            align-items: center;          /* Центрирование по вертикали */
+            justify-content: center;      /* Центрирование по горизонтали */
+
+            position: relative;
+            overflow: hidden;
+            transition: width 0.3s ease;
+        }
+
+        /* Стили текста, который появляется при наведении */
+        .btn-favorites span {
+            position: absolute;
+            left: 48px;
+            padding-bottom: 3px;
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.3s ease; /* Плавное появление текста */
+            color: #FFFFFF;
+        }
+
+        /* Стили при наведении */
+        .btn-favorites:hover {
+            border: 2px solid #FFFFFF;
+            width: 160px; /* Увеличиваем ширину кнопки при наведении */
+            justify-content: flex-start; /* Иконка перемещается вправо */
+            padding-left: 12px;
+            color: #FFFFFF;
+        }
+
+        .btn-favorites:hover span {
+            opacity: 1; /* Показать текст при наведении */
+        }
+        .btn-favorites:hover:focus:active  {
+            color: #FFFFFF;
+            border: 1px solid #FFFFFF;
+        }
+
+
         .main{
-            width: 550px;
-            height: 600px;
+            width: 500px;
+            height: 500px;
             overflow: hidden;
             background: #7FB77E;
             border-radius: 10px;
@@ -57,7 +122,7 @@
             display: flex;
             flex-direction: column;
             align-items: center; /* Центрирование по горизонтали */
-            margin-top: 80px;
+            margin-top: 30px;
         }
 
         input{
@@ -128,7 +193,7 @@
         }
 
         #chk:checked ~ .signup{
-            transform: translateY(-580px);
+            transform: translateY(-500px);
         }
         #chk:checked ~ .signup label{
             transform: scale(1);
@@ -201,7 +266,29 @@
     showError("${error}");
 </script>
 </#if>
+
+<div class="color-background">
+    <div class="container-custom">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+            <form action="/main" method="get">
+                <button type="submit" class="btn btn-mainPage me-md-2" style="background: none; border: none; padding: 0; font-size: 2rem; color: #ffffff; cursor: pointer; text-align: left;">
+                    Сервис для сравнения цен на маркетплейсах
+                </button>
+            </form>
+
+            <form action="/favorites" method="get">
+                <button type="submit" class="btn btn-favorites">
+                    <span>Избранное</span> <!-- Добавляем текст, который будет появляться -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+<div class="body-login">
 <div class="main">
+
     <input type="checkbox" id="chk" aria-hidden="true">
 
     <div class="login">
@@ -225,6 +312,7 @@
             </div>
         </form>
     </div>
+</div>
 </div>
 </body>
 </html>

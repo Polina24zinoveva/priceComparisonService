@@ -34,158 +34,170 @@ public class ResultSearchPageController {
     FavoritesRepository favoritesRepository;
 
 
-    @PostMapping("/resultsSearch")
-    public String resultsSearch(@RequestParam(name = "searchText") String searchText,
-                                @RequestParam(name="wbMainPage", required = false, defaultValue = "false") Boolean selectWbMainPage,
-                                @RequestParam(name="ozonMainPage", required = false, defaultValue = "false") Boolean selectOzonMainPage,
-                                @RequestParam(name="wb", required = false, defaultValue = "false") Boolean selectWb,
-                                @RequestParam(name="ozon", required = false, defaultValue = "false") Boolean selectOzon,
-                                HttpSession session, Model model, @AuthenticationPrincipal User user) throws IOException {
-        // Оборачиваем CopyOnWriteArrayList<Card> в CardContainer
-        CardContainer cardContainer = new CardContainer();
-
-        if (!((!selectWbMainPage && !selectOzonMainPage) || (selectWbMainPage && selectOzonMainPage))){
-            selectWb = selectWbMainPage;
-            selectOzon = selectOzonMainPage;
-        }
-
-        AtomicReference<String> searchingResultTitle = new AtomicReference<>(searchText);
-
-        if ((selectWb && selectOzon) || (!selectWb && !selectOzon)){
-            selectWbMainPage = true;
-            selectOzonMainPage = true;
-            selectWb = true;
-            selectOzon = true;
-            ExecutorService executor = Executors.newFixedThreadPool(2); // Создаем пул из двух потоков
-
-            // Создаем задачи для выполнения в параллельных потоках
-            AtomicReference<String> searchingResultTitleWB = new AtomicReference<>("");
-            AtomicReference<String>  searchingResultTitleOzon = new AtomicReference<>("");
-
-            Callable<Void> ozonTask = () -> {
-                searchingResultTitleWB.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
-                return null;
-            };
-            Callable<Void> wbTask = () -> {
-                searchingResultTitleOzon.set(searchService.connectToWb(searchText, cardContainer.getCards()));
-                return null;
-            };
-            if (!searchingResultTitleWB.get().equals("")) searchingResultTitle = searchingResultTitleWB;
-            else searchingResultTitle = searchingResultTitleOzon;
-
-
-            // Отправляем задачи на выполнение
-            Future<Void> ozonFuture = executor.submit(ozonTask);
-            Future<Void> wbFuture = executor.submit(wbTask);
-
-            try {
-                try {
-                    // Получение результатов задач
-                    ozonFuture.get();
-                    wbFuture.get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                // Завершение работы пула потоков
-                executor.shutdown();
-            }
-        } else if (selectWb) {
-            searchingResultTitle.set(searchService.connectToWb(searchText, cardContainer.getCards()));
-        } else if (selectOzon) {
-            searchingResultTitle.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
-        }
-
-        if (user != null){
-            for(Card card : cardContainer.getCards()){
-                if (favoritesRepository.existsByUserAndCardUrl(user, card.getUrl())){
-                    card.setInFavorites(true);
-                }
-            }
-        }
-
-        session.setAttribute("searchResults", cardContainer.getCards());
-        session.setAttribute("searchByDefault", cardContainer.getCards());
-        session.setAttribute("selectedRating", 0.0);
-        session.setAttribute("selectWb", true);
-        session.setAttribute("selectOzon", true);
-
-        session.setAttribute("selectWbMainPage", selectWbMainPage);
-        session.setAttribute("selectOzonMainPage", selectOzonMainPage);
-        session.setAttribute("searchText", searchingResultTitle);
-
-        sortByDefault(session, model);
-
-        return "resultsSearch";
-    }
-
 //    @PostMapping("/resultsSearch")
 //    public String resultsSearch(@RequestParam(name = "searchText") String searchText,
-//                                @RequestParam(name="wb", required = false) Boolean selectWb,
-//                                @RequestParam(name="ozon", required = false) Boolean selectOzon,
-//                                HttpSession session, // Добавляем HttpSession
-//                                @AuthenticationPrincipal User user, Model model) throws IOException {
+//                                @RequestParam(name="wbMainPage", required = false, defaultValue = "false") Boolean selectWbMainPage,
+//                                @RequestParam(name="ozonMainPage", required = false, defaultValue = "false") Boolean selectOzonMainPage,
+//                                @RequestParam(name="wb", required = false, defaultValue = "false") Boolean selectWb,
+//                                @RequestParam(name="ozon", required = false, defaultValue = "false") Boolean selectOzon,
+//                                HttpSession session, Model model, @AuthenticationPrincipal User user) throws IOException {
+//        // Оборачиваем CopyOnWriteArrayList<Card> в CardContainer
+//        CardContainer cardContainer = new CardContainer();
 //
-//        List<Card> cards = new ArrayList<>();
-//        if ((selectWb != null && selectOzon != null) || (selectWb == null && selectOzon == null)){
+//        if (!((!selectWbMainPage && !selectOzonMainPage) || (selectWbMainPage && selectOzonMainPage))){
+//            selectWb = selectWbMainPage;
+//            selectOzon = selectOzonMainPage;
+//        }
+//
+//        AtomicReference<String> searchingResultTitle = new AtomicReference<>(searchText);
+//
+//        if ((selectWb && selectOzon) || (!selectWb && !selectOzon)){
+//            selectWbMainPage = true;
+//            selectOzonMainPage = true;
 //            selectWb = true;
 //            selectOzon = true;
-//            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Wildberries",
-//                    "https://www.wildberries.ru/catalog/162194329/detail.aspx", 1609, 4.6, 40401,
-//                    "https://basket-11.wbbasket.ru/vol1621/part162194/162194329/images/c516x688/1.jpg", false));
+//            ExecutorService executor = Executors.newFixedThreadPool(2); // Создаем пул из двух потоков
 //
-//            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Ozon",
-//                    "https://www.wildberries.ru/catalog/74875398/detail.aspx", 1589, 4.6, 40402,
-//                    "https://basket-05.wbbasket.ru/vol748/part74875/74875398/images/c516x688/1.jpg", false));
+//            // Создаем задачи для выполнения в параллельных потоках
+//            AtomicReference<String> searchingResultTitleWB = new AtomicReference<>("");
+//            AtomicReference<String>  searchingResultTitleOzon = new AtomicReference<>("");
 //
-//            cards.add(new Card("Платье", "Ozon",
-//                    "https://www.ozon.ru/product/plate-1537134712/?advert=xA4obCFVEZ-XrzEmPETJD4IIbFTsx66GAoihM3kdtlHhq0dfsz7S7jgNIHo2K8p_c1dgmROkmO8eCXKAZmsF1NL5BieBhHgbckkbvkSJpI2ZtK8dg_xYnultHG14S-VrtPmMwMbrNo-26OzrTVNY303ADWXP3zipxNF-OI58VXOFybITzgxRvjLVNoBTY1rXQ0RQMrOMwWqLr-dgBWftwepEs0FuO-Qf0SsqhPbIXfZRgKPYLplSu7HMKOvIaycXXYaQ7fKk-0lW7gCb72VqqiSbnt8gSMfesLI23Ig3U3JL_j8aBbpetqzul23r0myhSegsx0yNcsDMkbitsNhB_GxBiYY5ohHTHMXsJaqfB7U88It3uaNV8bmWNd8E10KgrWspOHCz7OiISFLuysE-L69Q&avtc=1&avte=2&avts=1725636440&keywords=%D0%BF%D0%BB%D0%B0%D1%82%D1%8C%D0%B5",
-//                    1525, 4.9, 23,
-//                    "https://ir-2.ozone.ru/s3/multimedia-1-k/wc1000/7011786692.jpg", false));
+//            Callable<Void> ozonTask = () -> {
+//                searchingResultTitleWB.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
+//                return null;
+//            };
+//            Callable<Void> wbTask = () -> {
+//                searchingResultTitleOzon.set(searchService.connectToWb(searchText, cardContainer.getCards()));
+//                return null;
+//            };
+//            if (!searchingResultTitleWB.get().equals("")) searchingResultTitle = searchingResultTitleWB;
+//            else searchingResultTitle = searchingResultTitleOzon;
 //
-//            cards.add(new Card("Платье летнее короткое Сарафан крестьянка", "Wildberries",
-//                    "https://www.wildberries.ru/catalog/166706673/detail.aspx", 2015, 4.6, 6335,
-//                    "https://basket-12.wbbasket.ru/vol1667/part166706/166706673/images/c516x688/1.jpg", false));
 //
-//        } else if (selectWb != null) {
-//            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Wildberries",
-//                    "https://www.wildberries.ru/catalog/162194329/detail.aspx", 1609, 4.6, 40400,
-//                    "https://basket-11.wbbasket.ru/vol1621/part162194/162194329/images/c516x688/1.jpg", false));
+//            // Отправляем задачи на выполнение
+//            Future<Void> ozonFuture = executor.submit(ozonTask);
+//            Future<Void> wbFuture = executor.submit(wbTask);
 //
-//            cards.add(new Card("Платье летнее короткое Сарафан крестьянка", "Wildberries",
-//                    "https://www.wildberries.ru/catalog/166706673/detail.aspx", 2015, 4.6, 6335,
-//                    "https://basket-12.wbbasket.ru/vol1667/part166706/166706673/images/c516x688/1.jpg", false));
+//            try {
+//                try {
+//                    // Получение результатов задач
+//                    ozonFuture.get();
+//                    wbFuture.get();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 //
-//        } else if (selectOzon != null) {
-//            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Ozon",
-//                    "https://www.wildberries.ru/catalog/74875398/detail.aspx", 1589, 4.6, 40400,
-//                    "https://basket-05.wbbasket.ru/vol748/part74875/74875398/images/c516x688/1.jpg", false));
-//
-//            cards.add(new Card("Платье", "Ozon",
-//                    "https://www.ozon.ru/product/plate-1537134712/?advert=xA4obCFVEZ-XrzEmPETJD4IIbFTsx66GAoihM3kdtlHhq0dfsz7S7jgNIHo2K8p_c1dgmROkmO8eCXKAZmsF1NL5BieBhHgbckkbvkSJpI2ZtK8dg_xYnultHG14S-VrtPmMwMbrNo-26OzrTVNY303ADWXP3zipxNF-OI58VXOFybITzgxRvjLVNoBTY1rXQ0RQMrOMwWqLr-dgBWftwepEs0FuO-Qf0SsqhPbIXfZRgKPYLplSu7HMKOvIaycXXYaQ7fKk-0lW7gCb72VqqiSbnt8gSMfesLI23Ig3U3JL_j8aBbpetqzul23r0myhSegsx0yNcsDMkbitsNhB_GxBiYY5ohHTHMXsJaqfB7U88It3uaNV8bmWNd8E10KgrWspOHCz7OiISFLuysE-L69Q&avtc=1&avte=2&avts=1725636440&keywords=%D0%BF%D0%BB%D0%B0%D1%82%D1%8C%D0%B5",
-//                    1525, 4.9, 23,
-//                    "https://ir-2.ozone.ru/s3/multimedia-1-k/wc1000/7011786692.jpg", false));
-//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                // Завершение работы пула потоков
+//                executor.shutdown();
+//            }
+//        } else if (selectWb) {
+//            searchingResultTitle.set(searchService.connectToWb(searchText, cardContainer.getCards()));
+//        } else if (selectOzon) {
+//            searchingResultTitle.set(searchService.connectToOzon(searchText, cardContainer.getCards()));
 //        }
 //
 //        if (user != null){
-//            for(Card card : cards){
+//            for(Card card : cardContainer.getCards()){
 //                if (favoritesRepository.existsByUserAndCardUrl(user, card.getUrl())){
 //                    card.setInFavorites(true);
 //                }
 //            }
 //        }
 //
-//        session.setAttribute("searchResults", cards);
+//        session.setAttribute("searchResults", cardContainer.getCards());
+//        session.setAttribute("searchByDefault", cardContainer.getCards());
 //        session.setAttribute("selectedRating", 0.0);
-//        session.setAttribute("selectWb", selectWb);
-//        session.setAttribute("selectOzon", selectOzon);
+//        session.setAttribute("selectWb", true);
+//        session.setAttribute("selectOzon", true);
+//
+//        session.setAttribute("selectWbMainPage", selectWbMainPage);
+//        session.setAttribute("selectOzonMainPage", selectOzonMainPage);
+//        session.setAttribute("searchText", searchingResultTitle);
+//
 //        sortByDefault(session, model);
+//
 //        return "resultsSearch";
 //    }
+
+    @PostMapping("/resultsSearch")
+    public String resultsSearch(@RequestParam(name = "searchText") String searchText,
+                                @RequestParam(name="wb", required = false) Boolean selectWb,
+                                @RequestParam(name="ozon", required = false) Boolean selectOzon,
+                                HttpSession session, // Добавляем HttpSession
+                                @AuthenticationPrincipal User user, Model model) throws IOException {
+
+        List<Card> cards = new ArrayList<>();
+        if ((selectWb != null && selectOzon != null) || (selectWb == null && selectOzon == null)){
+            selectWb = true;
+            selectOzon = true;
+            cards.add(new Card("32 ГБ Флэш-накопитель / USB 3.1 3.0 2.0", "Ozon",
+                    "https://www.ozon.ru/product/32-gb-flesh-nakopitel-usb-3-1-3-0-2-0-1414662860/?advert=AAkBjI0o76vfBdS3SSWv7ZL35qwSVC8eIp_YdELg7vEd8nN5TP4rUx1A8bRJpe9y44ICWrN8Ad3JqUjhaIofIyPp8kzQsBimmiWiXOUfojvdAURvwJ27p9W_wHJjMcpea9s5LRMQXnf5JUUnMM3yOK4bc7cUe5DB2mZqct8-sm_nvsCv2TJBI3npyx0hZLHXbymanGPhWY5jqfQuOy3X9muYy2N7VmJ1mhhiekRRFcT2A-Q_Gu0TRPKhFLJKZuByj-HotlhuPqHOkm3UJ5z-hYww3aafBtw3qcVpzy_2HInDU3avYcwaWEDfEgQvt_lUkRxe-imlvwdHW5g8FwmKY_SRRoqrEX5_qsTPJ7CfiIgxvQRXBV7AOIvOh3qJlpJDL7hwmcylU-yKYxRyPH4ejyRi6h70e5pmA_QZMMIYbncKNlw9ojOXlhPWKSff54CJn6Mix2Zudwd06fkuTBCop0FK1z-PXdP7w28&avtc=1&avte=4&avts=1733749688&keywords=%D1%84%D0%BB%D0%B5%D1%88%D0%BA%D0%B0+32+%D0%B3%D0%B1", 274, 4.1, 2935,
+                    "https://ir-2.ozone.ru/s3/multimedia-o/wc1000/6580510080.jpg", false));
+
+            cards.add(new Card("Флешка 32 ГБ USB flash накопитель", "Wildberries",
+                    "https://www.wildberries.ru/catalog/268491026/detail.aspx", 478, 4.7, 871,
+                    "https://basket-17.wbbasket.ru/vol2684/part268491/268491026/images/c246x328/1.webp", false));
+
+            cards.add(new Card("Флешка 32 ГБ USB 3.0 металлическая", "Яндекс Маркет",
+                    "https://market.yandex.ru/product--32-gb-fleshka-usb-3-0-flash-nakopitel/73158643?sku=102801123983&uniqueId=57619322&do-waremd5=B2Mlcoq_JBeCZSoVgT3IWw",
+                    452, 4.7, 676,
+                    "https://avatars.mds.yandex.net/get-mpic/6217624/2a000001924d95d68942960f86b336dcf50c/600x800", false));
+
+            cards.add(new Card("Платье", "Ozon",
+                    "https://www.ozon.ru/product/plate-1537134712/?advert=xA4obCFVEZ-XrzEmPETJD4IIbFTsx66GAoihM3kdtlHhq0dfsz7S7jgNIHo2K8p_c1dgmROkmO8eCXKAZmsF1NL5BieBhHgbckkbvkSJpI2ZtK8dg_xYnultHG14S-VrtPmMwMbrNo-26OzrTVNY303ADWXP3zipxNF-OI58VXOFybITzgxRvjLVNoBTY1rXQ0RQMrOMwWqLr-dgBWftwepEs0FuO-Qf0SsqhPbIXfZRgKPYLplSu7HMKOvIaycXXYaQ7fKk-0lW7gCb72VqqiSbnt8gSMfesLI23Ig3U3JL_j8aBbpetqzul23r0myhSegsx0yNcsDMkbitsNhB_GxBiYY5ohHTHMXsJaqfB7U88It3uaNV8bmWNd8E10KgrWspOHCz7OiISFLuysE-L69Q&avtc=1&avte=2&avts=1725636440&keywords=%D0%BF%D0%BB%D0%B0%D1%82%D1%8C%D0%B5",
+                    1525, 4.9, 23,
+                    "https://ir-2.ozone.ru/s3/multimedia-1-k/wc1000/7011786692.jpg", false));
+
+            cards.add(new Card("Платье летнее короткое Сарафан крестьянка", "Магнит Маркет",
+                    "https://www.wildberries.ru/catalog/166706673/detail.aspx", 2015, 4.6, 6335,
+                    "https://basket-12.wbbasket.ru/vol1667/part166706/166706673/images/c516x688/1.jpg", false));
+
+        } else if (selectWb != null) {
+            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Wildberries",
+                    "https://www.wildberries.ru/catalog/162194329/detail.aspx", 1609, 4.6, 40400,
+                    "https://basket-11.wbbasket.ru/vol1621/part162194/162194329/images/c516x688/1.jpg", false));
+
+            cards.add(new Card("Платье летнее короткое Сарафан крестьянка", "Wildberries",
+                    "https://www.wildberries.ru/catalog/166706673/detail.aspx", 2015, 4.6, 6335,
+                    "https://basket-12.wbbasket.ru/vol1667/part166706/166706673/images/c516x688/1.jpg", false));
+
+        } else if (selectOzon != null) {
+            cards.add(new Card("Платье женское вечернее нарядное праздничное повседневное", "Ozon",
+                    "https://www.wildberries.ru/catalog/74875398/detail.aspx", 1589, 4.6, 40400,
+                    "https://basket-05.wbbasket.ru/vol748/part74875/74875398/images/c516x688/1.jpg", false));
+
+            cards.add(new Card("Платье", "Ozon",
+                    "https://www.ozon.ru/product/plate-1537134712/?advert=xA4obCFVEZ-XrzEmPETJD4IIbFTsx66GAoihM3kdtlHhq0dfsz7S7jgNIHo2K8p_c1dgmROkmO8eCXKAZmsF1NL5BieBhHgbckkbvkSJpI2ZtK8dg_xYnultHG14S-VrtPmMwMbrNo-26OzrTVNY303ADWXP3zipxNF-OI58VXOFybITzgxRvjLVNoBTY1rXQ0RQMrOMwWqLr-dgBWftwepEs0FuO-Qf0SsqhPbIXfZRgKPYLplSu7HMKOvIaycXXYaQ7fKk-0lW7gCb72VqqiSbnt8gSMfesLI23Ig3U3JL_j8aBbpetqzul23r0myhSegsx0yNcsDMkbitsNhB_GxBiYY5ohHTHMXsJaqfB7U88It3uaNV8bmWNd8E10KgrWspOHCz7OiISFLuysE-L69Q&avtc=1&avte=2&avts=1725636440&keywords=%D0%BF%D0%BB%D0%B0%D1%82%D1%8C%D0%B5",
+                    1525, 4.9, 23,
+                    "https://ir-2.ozone.ru/s3/multimedia-1-k/wc1000/7011786692.jpg", false));
+
+        }
+
+        if (user != null){
+            for(Card card : cards){
+                if (favoritesRepository.existsByUserAndCardUrl(user, card.getUrl())){
+                    card.setInFavorites(true);
+                }
+            }
+        }
+
+        session.setAttribute("searchResults", cards);
+        session.setAttribute("searchByDefault", cards);
+        session.setAttribute("selectedRating", 0.0);
+        session.setAttribute("selectWb", selectWb);
+        session.setAttribute("selectOzon", selectOzon);
+
+        session.setAttribute("selectWbMainPage", selectWb);
+        session.setAttribute("selectOzonMainPage", selectOzon);
+        session.setAttribute("searchText", searchText);
+
+        sortByDefault(session, model);
+
+        return "resultsSearch";
+    }
 
     @GetMapping("/resultsSearch")
     public String showSearchResults(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
