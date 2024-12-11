@@ -139,6 +139,7 @@
             margin-top: 20px;
             font-size: 18px;
         }
+
         .custom-button{
             width: 60%;
             height: 50px;
@@ -158,6 +159,7 @@
             transition: .2s ease-in;
             cursor: pointer;
         }
+
         .custom-button:hover{
             background: #7FB77E;
             border: 2px solid #1A5319;
@@ -171,6 +173,7 @@
             transform: translateY(-180px);
             transition: .8s ease-in-out;
         }
+
         .signup input{
             background: #ffffff;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
@@ -184,10 +187,11 @@
         }
 
         .signup label{
-            padding-top: 20px;
+            padding-top: 5px;
             color: #1A5319;
             transform: scale(.6);
         }
+
         .signup .custom-button:hover{
             background: #ffffff;
         }
@@ -304,10 +308,11 @@
 
     <div class="signup">
         <form action="/registration" method="post">
-            <label for="chk" aria-hidden="true">Регистрация</label>
-            <div class="signup-input-container">
+            <label for="chk" aria-hidden="true" style="margin-bottom:0; padding-bottom:0">Регистрация</label>
+            <div class="signup-input-container" style="margin-top:10px; padding-top:0">
                 <input type="email" id="email" name="email" placeholder="Email" required>
                 <input type="password" id="password" name="password" placeholder="Пароль" required>
+                <input type="password" id="password2" name="password2" placeholder="Повтор пароля" required>
                 <button class="custom-button">Зарегистрироваться</button>
             </div>
         </form>
