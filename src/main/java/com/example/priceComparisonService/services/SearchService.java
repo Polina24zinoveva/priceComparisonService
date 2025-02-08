@@ -251,6 +251,194 @@ public class SearchService {
         }
     }
 
+    public void connectToMm(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
+
+        try {
+            // Открытие сайта Магнит Маркет
+            driver.get("https://mm.ru/");
+
+            log.info("Подключено к {}", "https://mm.ru/");
+
+            driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
+
+            // Инициализация WebDriverWait
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+            // Ожидание, пока поле поиска станет доступным
+            WebElement searchBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("default-input")));
+            searchBox.sendKeys(productName);
+
+            // Ожидание, пока кнопка поиска станет кликабельной
+            WebElement searchButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("search-button")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", searchButton);
+
+            // Ожидание загрузки результатов
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("ui-card")));
+
+            // Повторное получение элементов
+            List<WebElement> productItems = driver.findElements(By.className("ui-card"));
+
+            // Обработка каждого товара
+            for (WebElement item : productItems) {
+
+                // Название
+                String name = item.findElement(By.className("subtitle-item")).getText();
+
+                // Цена
+                String priceText = item.findElement(By.className("product-card-price")).getText().replaceAll("[^\\d]", "");
+                int price = 0;
+                if (!priceText.isEmpty()) {
+                    price = Integer.parseInt(priceText);
+                }
+
+                // Ссылка на товар
+                String url = item.findElement(By.cssSelector("a")).getAttribute("href");
+
+                List<String> ratingAndCountReviews = List.of(item.findElement(By.className("orders")).getText().split("\n"));
+
+                // Рейтинг
+                String ratingText = ratingAndCountReviews.getFirst();
+                double rating = 0;
+                if (!ratingText.isEmpty()) {
+                    rating = Double.parseDouble(ratingText);
+                }
+
+                // Количество заказов
+                String countReviewsText = ratingAndCountReviews.get(1).split(" ")[0];
+                countReviewsText = countReviewsText.substring(1, countReviewsText.length());
+                int countReviews = 0;
+                if (!countReviewsText.isEmpty()) {
+                    countReviews = Integer.parseInt(countReviewsText);
+                }
+
+                // Фото
+                String imageUrl = item.findElement(By.className("main-card-icon-and-classname-collision-made-to-minimum")).getAttribute("src");
+
+                Card card = new Card(name, "Магнит Маркет", url, price, rating, countReviews, imageUrl, false);
+                cards.add(card);
+            }
+            log.info("Результат поиска на Магнит Маркете готов");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("Ошибка в Магнит Маркет");
+        } finally {
+            // Закрытие браузера
+            driver.quit();
+        }
+    }
+
+    public String connectToYm(String productName, CopyOnWriteArrayList<Card> cards) throws IOException {
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
+
+        try {
+            // Открытие сайта Яндекс Маркет
+            driver.get("https://market.yandex.ru/");
+
+            log.info("Подключено к {}", "https://market.yandex.ru/");
+
+            // Инициализация WebDriverWait
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+            // Ожидание, пока поле поиска станет доступным
+            WebElement searchBox = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("header-search")));
+            searchBox.sendKeys(productName);
+
+            // Ожидание, пока кнопка поиска станет кликабельной
+            WebElement searchButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("mini-suggest__button")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", searchButton);
+
+            // Ожидание загрузки результатов
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//article[@data-auto='searchOrganic']")));
+
+            // Повторное получение элементов
+            List<WebElement> productItems = driver.findElements(By.xpath("//article[@data-auto='searchOrganic']"));
+
+            String searchingResultTitle = null;
+            try {
+                searchingResultTitle = driver.findElement(By.xpath(".//span[@class='_2SUA6 _33utW _13aK2 _1A5yJ']")).getText();
+                searchingResultTitle = searchingResultTitle.substring(1, 2).toUpperCase() + searchingResultTitle.substring(2, searchingResultTitle.length() - 1);
+            }
+            catch (Exception e){
+                searchingResultTitle = productName;
+            }
+
+            // Обработка каждого товара
+            for (WebElement item : productItems) {
+
+                // Ссылка на товар
+                WebElement productLink = item.findElement(By.xpath(".//a[@data-auto='galleryLink']"));
+                String url = productLink.getAttribute("href");
+
+                // Фото
+                WebElement productImage = item.findElement(By.xpath(".//img[@class='w7Bf7']"));
+                String imageUrl = productImage.getAttribute("src");
+
+                // Название
+                String name = productImage.getAttribute("alt");
+
+                // Цена
+                WebElement priceElement = item.findElement(By.className("ds-text_color_price-term"));
+                String priceText = priceElement.getText().replaceAll("[^\\d]", "");
+                int price = 0;
+                if (!priceText.isEmpty()) {
+                    price = Integer.parseInt(priceText);
+                }
+
+
+                // Рейтинг
+                WebElement ratingElement = item.findElement(By.className("ds-text_color_text-rating"));
+                String ratingText = ratingElement.getText();
+                double rating = 0;
+                if (!ratingText.isEmpty()) {
+                    rating = Double.parseDouble(ratingText);
+                }
+
+                // Количество заказов
+                String countReviewsText = item.findElement(By.className("ds-text_color_text-secondary")).getText();
+                countReviewsText = countReviewsText.split(" ")[0];
+                int countReviews = 0;
+                if (!countReviewsText.isEmpty()) {
+                    countReviews = Integer.parseInt(countReviewsText);
+                }
+
+                Card card = new Card(name, "Яндекс Маркет", url, price, rating, countReviews, imageUrl, false);
+                cards.add(card);
+            }
+            log.info("Результат поиска на Яндекс Маркете готов");
+            return searchingResultTitle;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("Ошибка в Яндекс Маркете");
+            return productName;
+        } finally {
+            // Закрытие браузера
+            driver.quit();
+        }
+    }
+
     public Card checkPriceWb(String url) throws IOException {
 
         System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
@@ -406,6 +594,160 @@ public class SearchService {
         } catch (Exception e) {
             e.printStackTrace();
             log.info("Ошибка в Ozon или товар удален");
+            return null;
+        } finally {
+            // Закрытие браузера
+            driver.quit();
+        }
+    }
+
+    public Card checkPriceMm(String url) {
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
+
+        try {
+            // Открытие сайта Магнит Маркет
+            driver.get(url);
+
+            log.info("Подключено к {}", url);
+
+            // Инициализация WebDriverWait
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+            // Ожидание загрузки результатов
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("layout__body")));
+            WebElement webElement = driver.findElement(By.className("layout__body"));
+
+            // Название
+            String name = webElement.findElement(By.className("title")).getText();
+            // Цена
+            String priceText = webElement.findElement(By.className("sell-price")).getText().replaceAll("[^\\d]", "");
+            int price = 0;
+            if (!priceText.isEmpty()) {
+                price = Integer.parseInt(priceText);
+            }
+
+            // Рейтинг
+            String ratingText = webElement.findElement(By.className("rating-value")).getText();
+            double rating = 0;
+            if (!ratingText.isEmpty()) {
+                rating = Double.parseDouble(ratingText);
+            }
+
+            // Количество отзывов
+            String countReviewsText = webElement.findElement(By.className("reviews_pointer"))
+                .getText()
+                .replaceAll("\\(", "")
+                .replaceAll("\\)", "")
+                .replaceAll(" отзывов", "")
+                .replaceAll(" отзыв", "")
+                .replaceAll(" отзыва", "")
+                .replaceAll("[^\\d]", "");
+
+            int countReviews = 0;
+            if (!countReviewsText.isEmpty()) {
+                countReviews = Integer.parseInt(countReviewsText);
+            }
+
+            // Фото
+            String imageUrl = webElement.findElement(By.className("main-photo__content__image")).getAttribute("src");
+            Card card = new Card(name, "Магнит Маркет", url, price, rating, countReviews, imageUrl, false);
+
+            log.info("Обновлена цена товара");
+            return card;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("Ошибка в Магнит Маркет");
+            return null;
+        } finally {
+            // Закрытие браузера
+            driver.quit();
+        }
+    }
+
+    public Card checkPriceYM(String url) {
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-blink-features=AutomationControlled"); // Отключение флага автоматизации
+
+        System.setProperty("webdriver.chrome.driver", "selenium\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver(options);
+
+        // Открытие сайта Яндекс Маркет
+        driver.get(url);
+
+        log.info("Подключено к {}", url);
+
+        // Инициализация WebDriverWait
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            // Ожидание загрузки результатов
+
+            WebElement webElement = driver.findElement(By.xpath("//div[@data-zone-name='product-page']"));
+
+
+            // Название
+            String name = webElement.findElement(By.xpath("//h1[@data-additional-zone='title']")).getText();
+
+            String priceText;
+            // Цена
+            WebElement priceElement = webElement.findElement(By.cssSelector("span._2r9lI[data-auto='snippet-price-old']"));
+
+            priceText = priceElement.getText().split("\n")[2].split("[^\\d]")[0];
+            int price = 0;
+
+            if (!priceText.isEmpty()) {
+                price = Integer.parseInt(priceText);
+            }
+
+
+            // Рейтинг
+            String ratingText = webElement.findElement(By.xpath("//span[@data-auto='ratingValue']")).getText();
+            double rating = 0;
+            if (!ratingText.isEmpty()) {
+                rating = Double.parseDouble(ratingText);
+            }
+
+            // Количество отзывов
+            String countReviewsText = webElement.findElement(By.xpath("//span[@data-auto='ratingCount']"))
+                    .getText()
+                    .replaceAll("\\(", "")
+                    .replaceAll("\\)", "");
+            if (countReviewsText.contains("K")){
+                countReviewsText = countReviewsText.replace("K", "000");
+            }
+            int countReviews = 0;
+            if (!countReviewsText.isEmpty()) {
+                countReviews = Integer.parseInt(countReviewsText);
+            }
+
+            // Фото
+            String imageUrl = webElement.findElement(By.id("transition-page")).getAttribute("src");
+            Card card = new Card(name, "Яндекс Маркет", url, price, rating, countReviews, imageUrl, false);
+
+
+            log.info("Обновлена цена товара");
+            return card;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("Ошибка в Яндекс Маркете или товар удален");
             return null;
         } finally {
             // Закрытие браузера

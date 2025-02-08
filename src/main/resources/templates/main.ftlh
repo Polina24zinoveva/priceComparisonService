@@ -93,6 +93,8 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-start marketplaces">
                         <input type="hidden" name="ozonMainPage" id="ozonMainPage">
                         <input type="hidden" name="wbMainPage" id="wbMainPage">
+                        <input type="hidden" name="ymMainPage" id="ymMainPage">
+                        <input type="hidden" name="mmMainPage" id="mmMainPage">
 
                         <div id="wbMainPage" class="marketplace-background" data-name="wbMainPage">Wildberries</div>
                         <div id="ozonMainPage" class="marketplace-background" style="margin-left:7px;" data-name="ozonMainPage">Ozon</div>

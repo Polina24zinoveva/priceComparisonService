@@ -297,7 +297,11 @@
                                 <input type="text" name="searchText" id="searchText"  class="form-control search-bar" <#if searchText??> placeholder="${searchText}" <#else> placeholder="Введите название товара" </#if>>
                             </div>
 
-                        <#include "blocks/searchBar.ftlh">
+                            <#include "blocks/searchBar.ftlh">
+                        </form>
+                        <form class="form-inline" action="/resultsSearch" method="post" onsubmit="showProgressBar()">
+                            <button type="submit" class="btn btn-search mb-2" style="width: 100px; margin-right: 16px;">Искать</button>
+                            <input type="hidden" name="searchText" id="searchText">
                         </form>
 
                         <div class="btn-group form-inline" role="group">
@@ -385,6 +389,22 @@
                                                 </label>
                                             </div>
                                         </#if>
+                                        <#if selectMmMainPage == true>
+                                            <div class="form-check sideMargin verticalMargin">
+                                                <input class="form-check-input" type="checkbox" name="mm" id="mm" value="true" <#if selectMm?? && selectMm == true>checked</#if>>
+                                                <label class="form-check-label" for="mm">
+                                                    Магнит Маркет
+                                                </label>
+                                            </div>
+                                        </#if>
+                                        <#if selectYmMainPage == true>
+                                            <div class="form-check sideMargin verticalMargin">
+                                                <input class="form-check-input" type="checkbox" name="ym" id="ym" value="true" <#if selectYm?? && selectYm == true>checked</#if>>
+                                                <label class="form-check-label" for="ym">
+                                                    Яндекс Маркет
+                                                </label>
+                                            </div>
+                                        </#if>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
 
@@ -459,10 +479,7 @@
                                 </ul>
                             </form>
                         </div>
-                        <form class="form-inline" action="/resultsSearch" method="post" onsubmit="showProgressBar()">
-                            <button type="submit" class="btn btn-search mb-2" style="width: 100px; margin-left: 12px;">Искать</button>
-                            <input type="hidden" name="searchText" id="searchText">
-                        </form>
+
                     </div>
                 </div>
 

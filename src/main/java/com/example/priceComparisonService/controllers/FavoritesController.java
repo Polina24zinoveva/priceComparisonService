@@ -7,17 +7,12 @@ import com.example.priceComparisonService.repositories.FavoritesRepository;
 import com.example.priceComparisonService.services.FavoritesService;
 import com.example.priceComparisonService.services.SearchService;
 import com.example.priceComparisonService.services.UserService;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,8 +38,7 @@ public class FavoritesController {
     private final UserService userService;
 
     @GetMapping("favorites")
-    public String favoritesPage(HttpSession session, @AuthenticationPrincipal User user, Model model) throws IOException {
-        //User userr = userService.getUserByEmail("123@mail.ru");
+    public String favoritesPage(HttpSession session, @AuthenticationPrincipal User user, Model model) {
         List<Favorite> favoritesList = favoritesRepository.findByUser(user);
         model.addAttribute("cards", favoritesList);
         // Сохранение результатов поиска в сессии
@@ -79,6 +73,12 @@ public class FavoritesController {
                     break;
                 case "Ozon":
                     checkedCard = searchService.checkPriceOzon(url);
+                    break;
+                case "Магнит Маркет":
+                    checkedCard = searchService.checkPriceMm(url);
+                    break;
+                case "Яндекс Маркет":
+                    checkedCard = searchService.checkPriceYM(url);
                     break;
             }
 
@@ -190,7 +190,7 @@ public class FavoritesController {
                             @RequestParam(name = "countReviews") String countReviewsText,
                             @RequestParam(name = "imageUrl") String imageUrl,
                             @RequestParam(name = "searchText") String searchText,
-                            Model model) throws IOException {
+                            Model model) {
 
         List<Favorite> favoritesList = favoritesRepository.findByUser(user);
         boolean favBouquetExists = favoritesList.stream()
