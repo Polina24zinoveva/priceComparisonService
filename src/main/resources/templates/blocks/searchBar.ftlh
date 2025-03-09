@@ -1,19 +1,50 @@
 <style>
+
+    @font-face {
+        font-family: 'Mikodacs';
+        src: url('/fonts/Mikodacs-fMac.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* Использование */
+
+    .mikodacs-text {
+        font-family: 'Mikodacs', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #F3F1ED;
+    }
+
+
     .form-inline .form-group, .form-inline {
         display: flex;
         align-items: center;
     }
 
     .search-bar {
-        margin-top: 10px;
-        height: 46px;
+        padding-left: 17px;
+        height: 54px;
+        width: 82rem;
         font-size: 18px;
+        border-radius: 40px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+        flex-grow: 1;
     }
 
     /* Прогресс бар */
     .progress {
         height: 30px;
-        background-color: #D6EFD8;
+        background-color: #7f2f8d;
+        background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
+                          radial-gradient(at 82% 78%, hsla(58, 91%, 63%, 1) 0, hsla(58, 91%, 63%, 0) 50%),
+                          radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
+                          radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
+        background-size: 100% 300%; /* Растянем градиент по высоте */
+        background-position: center top; /* Оставляем верхнюю часть */
     }
 
     .progress-bar {
@@ -68,14 +99,15 @@
 
     .color-background {
         display: grid;
-        background: #7FB77E;
+        background-color: #7f2f8d;
+        background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
+        radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
+        radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
+        radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
     }
 
     .container-custom{
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-        margin-left: 17rem;
-        margin-right: 4rem;
+        margin: 2rem 4rem;
     }
 
     .search-container {
@@ -83,26 +115,12 @@
         justify-content: left;
     }
 
-    .searchBar-background {
-        background-color: #ffffff;
-        border-top-left-radius: 50px;  /* Закругление левого верхнего угла */
-        border-top-right-radius: 50px; /* Закругление правого верхнего угла */
-    }
-
-    .searchBar-container {
-        margin-left: 16rem;
-        width: 76rem;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-    }
 
     .btn-favorites {
         width: 54px;
         height: 54px;
         font-size: 18px;
         border-radius: 40px;
-        color: #FFFFFF;
-        border: 1px solid #FFFFFF;
         box-shadow: 0 5px 15px rgba(255, 255, 255, 0.35);
 
 
@@ -115,7 +133,6 @@
         transition: width 0.3s ease;
     }
 
-    /* Стили текста, который появляется при наведении */
     .btn-favorites span {
         position: absolute;
         left: 48px;
@@ -123,45 +140,44 @@
         opacity: 0;
         white-space: nowrap;
         transition: opacity 0.3s ease; /* Плавное появление текста */
-        color: #FFFFFF;
     }
 
     /* Стили при наведении */
     .btn-favorites:hover {
-        border: 2px solid #FFFFFF;
         width: 160px; /* Увеличиваем ширину кнопки при наведении */
         justify-content: flex-start; /* Иконка перемещается вправо */
         padding-left: 12px;
-        color: #FFFFFF;
     }
 
     .btn-favorites:hover span {
         opacity: 1; /* Показать текст при наведении */
     }
-    .btn-favorites:hover:focus:active  {
-        color: #FFFFFF;
-        border: 1px solid #FFFFFF;
-    }
 
 
     .btn-search {
-        width: 150px;
-        height: 46px;
-        margin-top: 10px;
-        border-color: #80AF81;
-        background-color: #80AF81;
+        width: 150px; /* Увеличиваем ширину кнопки при наведении */
+        justify-content: flex-start; /* Иконка перемещается вправо */
+        padding-left: 12px;
+        height: 54px;
         font-size: 18px;
-        color: #ffffff;
+        border-radius: 40px;
+        color: #000000;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+
+
+        position: relative;
+        overflow: hidden;
     }
 
+    /* Стили при наведении */
     .btn-search:hover {
-        color: #80AF81;
-        border-color: #80AF81;
-        background-color: rgba(214, 239, 216, 0.5);
+        border: 1px solid #2B2B2B;
+        color: #000000;
     }
 
     input[type=text]:hover {
-      border: 2px solid #80AF81;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+        border: none;
     }
 
 

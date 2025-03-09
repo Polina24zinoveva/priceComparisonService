@@ -85,7 +85,14 @@
             width: 500px;
             height: 500px;
             overflow: hidden;
-            background: #7FB77E;
+            background-color: #e8a08c;
+            background-image:
+                radial-gradient(at 10% 15%, #58A5E6 15%, rgba(88, 165, 230, 0.1) 50%, transparent 70%), /* Голубой (уменьшен) */
+                radial-gradient(at 85% 15%, #A46AB9 20%, rgba(164, 106, 185, 0.2) 50%, transparent 80%), /* Фиолетовый выше */
+                radial-gradient(at 80% 50%, #E8A08C 25%, rgba(232, 160, 140, 0.2) 60%, transparent 80%), /* Оранжевый поднят выше */
+                radial-gradient(at 15% 65%, hsla(331, 94%, 79%, 0.6) 0, hsla(331, 94%, 79%, 0) 50%),
+                radial-gradient(at 52% 98%, hsla(55, 95%, 66%, 0.6) 0, hsla(55, 95%, 66%, 0) 50%);
+
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
         }
@@ -147,8 +154,8 @@
             justify-content: center;
             display: block;
             color: #FFFFFF;
-            background: #7FB77E;
-            border: 2px solid #FFFFFF;
+            background: none;
+            border: 2px solid white;
             box-shadow: 0 5px 15px rgba(255, 255, 255, 0.35);
 
             font-size: 18px;
@@ -161,9 +168,10 @@
         }
 
         .custom-button:hover{
-            background: #7FB77E;
-            border: 2px solid #1A5319;
-            color: #1A5319;
+            color: #FFFFFF;
+            background: none;
+            border: 2px solid white;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.5);
         }
 
         .signup{
@@ -188,7 +196,7 @@
 
         .signup label{
             padding-top: 5px;
-            color: #1A5319;
+            color: #EA9E5F;
             transform: scale(.6);
         }
 
@@ -255,69 +263,52 @@
 
 
 <body>
-<#if message??>
-<script>
-    showMessage("${message}");
-</script>
-</#if>
-<#if warning??>
-<script>
-    showWarning("${warning}");
-</script>
-</#if>
-<#if error??>
-<script>
-    showError("${error}");
-</script>
-</#if>
+    <#if message??>
+        <script>
+            showMessage("${message}");
+        </script>
+    </#if>
+    <#if warning??>
+        <script>
+            showWarning("${warning}");
+        </script>
+    </#if>
+    <#if error??>
+        <script>
+            showError("${error}");
+        </script>
+    </#if>
 
-<div class="color-background">
-    <div class="container-custom">
-        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-            <form action="/main" method="get">
-                <button type="submit" class="btn btn-mainPage me-md-2" style="background: none; border: none; padding: 0; font-size: 2rem; color: #ffffff; cursor: pointer; text-align: left;">
-                    Сервис для сравнения цен на маркетплейсах
-                </button>
-            </form>
+    <#include "blocks/header.ftlh">
 
-            <form action="/favorites" method="get">
-                <button type="submit" class="btn btn-favorites">
-                    <span>Избранное</span> <!-- Добавляем текст, который будет появляться -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-                    </svg>
-                </button>
-            </form>
+    <div class="body-login">
+        <div class="main">
+
+            <input type="checkbox" id="chk" aria-hidden="true">
+
+            <div class="login">
+                <form action="/login" method="post">
+                    <label for="chk" aria-hidden="true">Вход</label>
+                    <div class="input-container">
+                        <input type="email" id="username" name="username" placeholder="Email">
+                        <input type="password" id="password" name="password" placeholder="Пароль">
+                        <button class="custom-button">Войти</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="signup">
+                <form action="/registration" method="post">
+                    <label for="chk" aria-hidden="true" style="margin-bottom:0; padding-bottom:0">Регистрация</label>
+                    <div class="signup-input-container" style="margin-top:10px; padding-top:0">
+                        <input type="email" id="email" name="email" placeholder="Email" required>
+                        <input type="password" id="password" name="password" placeholder="Пароль" required>
+                        <input type="password" id="password2" name="password2" placeholder="Повтор пароля" required>
+                        <button class="custom-button">Зарегистрироваться</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-<div class="body-login">
-<div class="main">
-
-    <input type="checkbox" id="chk" aria-hidden="true">
-
-    <div class="login">
-        <form action="/login" method="post">
-            <label for="chk" aria-hidden="true">Вход</label>
-            <div class="input-container">
-                <input type="email" id="username" name="username" placeholder="Email">
-                <input type="password" id="password" name="password" placeholder="Пароль">
-                <button class="custom-button">Войти</button>
-            </div>
-        </form>
-    </div>
-
-    <div class="signup">
-        <form action="/registration" method="post">
-            <label for="chk" aria-hidden="true" style="margin-bottom:0; padding-bottom:0">Регистрация</label>
-            <div class="signup-input-container" style="margin-top:10px; padding-top:0">
-                <input type="email" id="email" name="email" placeholder="Email" required>
-                <input type="password" id="password" name="password" placeholder="Пароль" required>
-                <input type="password" id="password2" name="password2" placeholder="Повтор пароля" required>
-                <button class="custom-button">Зарегистрироваться</button>
-            </div>
-        </form>
-    </div>
-</div>
-</div>
 </body>
 </html>
