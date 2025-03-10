@@ -185,35 +185,60 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
         }
 
-        .btn-card-wb:hover {
-            background-color: #A864DD;
-            color: #ffffff;
+        .btn-card-wb:hover,
+        .btn-card-wb:active{
+            background-color: #A864DD !important;
+            color: #ffffff !important;
         }
 
-        .btn-card-ozon:hover {
-            background-color: #5C91FE;
-            color: #ffffff;
+        .btn-card-ozon:hover,
+        .btn-card-ozon:active{
+            background-color: #5C91FE !important;
+            color: #ffffff !important;
         }
 
-        .btn-card-ym:hover {
-            background-color: #FF9A66;
-            color: #ffffff;
+        .btn-card-ym:hover,
+        .btn-card-ym:active{
+            background-color: #FF9A66 !important;
+            color: #ffffff !important;
         }
 
-        .btn-card-mm:hover {
-            background-color: #FA6252;
-            color: #ffffff;
+        .btn-card-mm:hover,
+        .btn-card-mm:active{
+            background-color: #FA6252 !important;
+            color: #ffffff !important;
         }
 
 
-        .btn-dropdown-menu{
+        .btn-in-filters{
             border: 1px solid #DEE2E6;
             background-color: #DEE2E6;
         }
 
-        .btn-dropdown-menu:hover{
+        .btn-in-filters:hover{
             border: 1px solid black;
             background-color: #DEE2E6;
+        }
+
+        .filter-button {
+            height: 36px;
+            font-size: 16px;
+            border-radius: 30px;
+            background-color: #E6E6E6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .filter-button:hover {
+            border: 1px solid #2B2B2B;
+        }
+
+        .filters{
+            margin-bottom: 3rem;
         }
     </style>
 </head>
@@ -313,7 +338,7 @@
                                         </#if>
                                     </li>
                                     <li>
-                                        <button type="submit" class="btn btn-search" style="width:200px;">Применить</button>
+                                        <button type="submit" class="btn btn-in-filters" style="width:200px;">Применить</button>
                                     </li>
                                 </ul>
                             </form>
@@ -329,7 +354,7 @@
                                         <div class="input-group mb-3">
                                             <input type="number" name="minPrice" class="form-control" min="0" max="100000000" placeholder="от ${minPrice}">
                                             <input type="number" name="maxPrice" class="form-control" min="1" max="100000000" placeholder="до ${maxPrice}">
-                                            <button type="submit" class="btn btn-dropdown-menu">ОК</button>
+                                            <button type="submit" class="btn btn-in-filters">ОК</button>
                                         </div>
                                     </li>
                                 </ul>
@@ -340,35 +365,35 @@
                             <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 Рейтинг
                             </button>
-                            <form action="/filters" method="post">
+                            <form action="/filters" method="post" id="ratingForm">
                                 <ul class="dropdown-menu" style="width:160px;">
                                     <li>
                                         <div class="form-check sideMargin verticalMargin">
-                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating40" value="4.0" <#if selectedRating==4.0>checked</#if>>
+                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating40" value="4.0" <#if selectedRating?? && selectedRating==4.0>checked</#if>>
                                             <label class="form-check-label" for="rating40">
                                                 не ниже 4.0
                                             </label>
                                         </div>
                                         <div class="form-check sideMargin verticalMargin">
-                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating45" value="4.5" <#if selectedRating==4.5>checked</#if>>
+                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating45" value="4.5" <#if selectedRating?? && selectedRating==4.5>checked</#if>>
                                             <label class="form-check-label" for="rating45">
                                                 не ниже 4.5
                                             </label>
                                         </div>
                                         <div class="form-check sideMargin verticalMargin">
-                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating48" value="4.8" <#if selectedRating==4.8>checked</#if>>
+                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating48" value="4.8" <#if selectedRating?? && selectedRating==4.8>checked</#if>>
                                             <label class="form-check-label" for="rating48">
                                                 не ниже 4.8
                                             </label>
                                         </div>
                                         <div class="form-check sideMargin verticalMargin">
-                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating49" value="4.9" <#if selectedRating==4.9>checked</#if>>
+                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating49" value="4.9" <#if selectedRating?? && selectedRating==4.9>checked</#if>>
                                             <label class="form-check-label" for="rating49">
                                                 не ниже 4.9
                                             </label>
                                         </div>
                                         <div class="form-check sideMargin verticalMargin">
-                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating50" value="5.0" <#if selectedRating==5.0>checked</#if>>
+                                            <input class="form-check-input rating-checkbox" type="radio" name="rating" id="rating50" value="5.0" <#if selectedRating?? && selectedRating==5.0>checked</#if>>
                                             <label class="form-check-label" for="rating50">
                                                 5.0
                                             </label>
@@ -376,6 +401,15 @@
                                     </li>
                                 </ul>
                             </form>
+                            <script>
+                                // Добавляем обработчик события change для всех radiobutton
+                                document.querySelectorAll('.rating-checkbox').forEach(function(radio) {
+                                    radio.addEventListener('change', function() {
+                                        // Отправляем форму при выборе radiobutton
+                                        document.getElementById('ratingForm').submit();
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <div class="btn-group me-1" role="group">
@@ -388,7 +422,7 @@
                                         <div class="input-group mb-3">
                                             <input type="number" name="minReviews" class="form-control" min="0" max="100000000" placeholder="от ${minReviews}">
                                             <input type="number" name="maxReviews" class="form-control" min="1" max="100000000" placeholder="до ${maxReviews}">
-                                            <button type="submit" class="btn btn-dropdown-menu">ОК</button>
+                                            <button type="submit" class="btn btn-in-filters" style="padding-top:4px;">ОК</button>
                                         </div>
                                     </li>
                                 </ul>
@@ -451,6 +485,105 @@
                         </ul>
                     </div>
                 </div>
+
+                <#if (selectWb?? && selectWb==true) || (selectOzon?? && selectOzon==true) || (selectMm?? && selectMm==true)
+                || (selectYm?? && selectYm==true) || selectedMinPrice?? || selectedMaxPrice?? || selectedRating??
+                || selectedMinReviews?? || selectedMaxReviews??>
+                    <form action="/deleteFilter" method="post" onsubmit="showProgressBar()" id="filterForm">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start filters">
+                            <!-- Скрытые поля для фильтров -->
+                            <input type="hidden" name="wbFilter" id="hidden-wbFilter">
+                            <input type="hidden" name="ozonFilter" id="hidden-ozonFilter">
+                            <input type="hidden" name="ymFilter" id="hidden-ymFilter">
+                            <input type="hidden" name="mmFilter" id="hidden-mmFilter">
+                            <input type="hidden" name="minPriceFilter" id="hidden-minPriceFilter">
+                            <input type="hidden" name="maxPriceFilter" id="hidden-maxPriceFilter">
+                            <input type="hidden" name="rating40Filter" id="hidden-rating40Filter">
+                            <input type="hidden" name="rating45Filter" id="hidden-rating45Filter">
+                            <input type="hidden" name="rating48Filter" id="hidden-rating48Filter">
+                            <input type="hidden" name="rating49Filter" id="hidden-rating49Filter">
+                            <input type="hidden" name="rating50Filter" id="hidden-rating50Filter">
+                            <input type="hidden" name="minReviewsFilter" id="hidden-minReviewsFilter">
+                            <input type="hidden" name="maxReviewsFilter" id="hidden-maxReviewsFilter">
+
+                            <!-- Кнопки удаления фильтров -->
+                            <#if selectWb?? && selectWb==true>
+                                <button type="button" class="filter-button" onclick="deleteFilter('wbFilter')">&#x2715; Wildberries</button>
+                            </#if>
+                            <#if selectOzon?? && selectOzon==true>
+                                <button type="button" class="filter-button" onclick="deleteFilter('ozonFilter')" style="margin-left:7px;">&#x2715; Ozon</button>
+                            </#if>
+                            <#if selectMm?? && selectMm==true>
+                                <button type="button" class="filter-button" onclick="deleteFilter('ymFilter')" style="margin-left:7px;">&#x2715; Магнит Маркет</button>
+                            </#if>
+                            <#if selectYm?? && selectYm==true>
+                                <button type="button" class="filter-button" onclick="deleteFilter('mmFilter')" style="margin-left:7px;">&#x2715; Яндекс Маркет</button>
+                            </#if>
+                            <#if selectedMinPrice??>
+                                <button type="button" class="filter-button" onclick="deleteFilter('minPriceFilter')" style="margin-left:7px;">&#x2715; от ${selectedMinPrice} ₽</button>
+                            </#if>
+                            <#if selectedMaxPrice??>
+                                <button type="button" class="filter-button" onclick="deleteFilter('maxPriceFilter')" style="margin-left:7px;">&#x2715; до ${selectedMaxPrice} ₽</button>
+                            </#if>
+                            <#if selectedRating?? && selectedRating==4.0>
+                                <button type="button" class="filter-button" onclick="deleteFilter('rating40Filter')" style="margin-left:7px;">&#x2715; рейтинг от 4.0</button>
+                            </#if>
+                            <#if selectedRating?? && selectedRating==4.5>
+                                <button type="button" class="filter-button" onclick="deleteFilter('rating45Filter')" style="margin-left:7px;">&#x2715; рейтинг от 4.5</button>
+                            </#if>
+                            <#if selectedRating?? && selectedRating==4.8>
+                                <button type="button" class="filter-button" onclick="deleteFilter('rating48Filter')" style="margin-left:7px;">&#x2715; рейтинг от 4.8</button>
+                            </#if>
+                            <#if selectedRating?? && selectedRating==4.9>
+                                <button type="button" class="filter-button" onclick="deleteFilter('rating49Filter')" style="margin-left:7px;">&#x2715; рейтинг от 4.9</button>
+                            </#if>
+                            <#if selectedRating?? && selectedRating==5.0>
+                                <button type="button" class="filter-button" onclick="deleteFilter('rating50Filter')" style="margin-left:7px;">&#x2715; рейтинг 5.0</button>
+                            </#if>
+                            <#if selectedMinReviews??>
+                                <button type="button" class="filter-button" onclick="deleteFilter('minReviewsFilter')" style="margin-left:7px;">&#x2715; от ${selectedMinReviews}
+                                    <#if selectedMinReviews % 10 == 1>оценки<#else>оценок</#if>
+                                </button>
+                            </#if>
+                            <#if selectedMaxReviews??>
+                                <button type="button" class="filter-button" onclick="deleteFilter('maxReviewsFilter')" style="margin-left:7px;">&#x2715; до ${selectedMaxReviews}
+                                    <#if selectedMaxReviews % 10 == 1>оценки<#else>оценок</#if>
+                                </button>
+                            </#if>
+
+                            <a href="#" class="custom-link" style="text-decoration:underline;margin-left:7px; padding-top:4px; font-size: 16px;" id="clearFilters">Очистить все</a>
+                        </div>
+                    </form>
+                </#if>
+                <script>
+                    function deleteFilter(filterName) {
+                        document.getElementById('hidden-' + filterName).value = true;
+                        document.getElementById('filterForm').submit();
+                    }
+
+                    document.getElementById('clearFilters').addEventListener('click', function(event) {
+                        event.preventDefault();
+                        document.getElementById('filterForm').submit();
+                    });
+                </script>
+                <script>
+                    document.querySelectorAll('.filter-background').forEach(function(filter) {
+                        filter.addEventListener('click', function() {
+                            const filterName = this.getAttribute('data-name');
+                            const hiddenInput = document.getElementById('hidden-' + filterName);
+
+                            if (hiddenInput) {
+                                document.getElementById('filterForm').submit();
+                            }
+                        });
+                    });
+
+                    document.getElementById('clearFilters').addEventListener('click', function(event) {
+                        document.getElementById('filterForm').submit();
+                    });
+
+
+                </script>
 
                 <#if cards??>
                     <#if cards?size == 0>

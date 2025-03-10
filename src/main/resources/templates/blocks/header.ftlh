@@ -11,14 +11,13 @@
 
 
     .btn-mainPage {
-        width: 54px;
+        width: 460px;
         height: 54px;
-        font-size: 18px;
+        font-size: 20px;
         border-radius: 40px;
         color: #ffffff;
         border: 2px solid #ffffff;
         box-shadow: 0 5px 15px rgba(255, 255, 255, 0.35);
-        font-size: 26px;
         padding-bottom: 10px;
 
 
@@ -26,41 +25,17 @@
         align-items: center;          /* Центрирование по вертикали */
         justify-content: center;      /* Центрирование по горизонтали */
 
-        position: relative;
-        overflow: hidden;
-        transition: width 0.3s ease;
-    }
-
-    /* Стили текста, который появляется при наведении */
-    .btn-mainPage span {
-        position: absolute;
-        left: 34px;
-        padding-top: 2px;
-        opacity: 0;
-        font-size: 20px;
-        white-space: nowrap;
-        transition: opacity 0.3s ease; /* Плавное появление текста */
-        color: #ffffff;
     }
 
     /* Стили при наведении */
-    .btn-mainPage:hover {
-        border: 2px solid #ffffff;
-        width: 460px; /* Увеличиваем ширину кнопки при наведении */
-        justify-content: flex-start; /* Иконка перемещается вправо */
-        padding-left: 17px;
-        color: #ffffff;
+    .btn-mainPage:hover,
+    .btn-mainPage:active{
+       border: 2px solid white !important;
+       color: white !important;
+       box-shadow: 0 5px 15px rgba(255, 255, 255, 0.55) !important;
     }
 
-    .btn-mainPage:hover span {
-        opacity: 1; /* Показать текст при наведении */
-    }
-    .btn-mainPage:hover:focus:active  {
-        color: #FFFFFF;
-        border: 2px solid #ffffff;
-    }
-
-    .search-button {
+    .btn-search {
         width: 54px;
         height: 54px;
         font-size: 18px;
@@ -80,7 +55,7 @@
     }
 
     /* Стили текста, который появляется при наведении */
-    .search-button span {
+    .btn-search span {
         position: absolute;
         left: 48px;
         padding-bottom: 3px;
@@ -91,18 +66,24 @@
     }
 
     /* Стили при наведении */
-    .search-button:hover {
-        border: 2px solid #ffffff;
+    .btn-search:hover{
+        border: 2px solid white !important;
         width: 130px; /* Увеличиваем ширину кнопки при наведении */
         justify-content: flex-start; /* Иконка перемещается вправо */
         padding-left: 12px;
-        color: #ffffff;
+        color: white !important;
     }
 
-    .search-button:hover span {
+    .btn-search:active{
+        border: 2px solid white !important;
+        color: white !important;
+    }
+
+
+    .btn-search:hover span {
         opacity: 1; /* Показать текст при наведении */
     }
-    .search-button:hover:focus:active  {
+    .btn-search:hover:focus:active  {
         color: #FFFFFF;
         border: 2px solid #ffffff;
     }
@@ -119,8 +100,13 @@
 
     /* Стили при наведении */
     .btn-favorites:hover {
-        border: 2px solid #ffffff;
-        color: #ffffff;
+        border: 2px solid white !important;
+        color: white !important;
+    }
+
+    .btn-favorites:active{
+        border: 2px solid white !important;
+        color: white !important;
     }
 
     .btn-favorites:hover:focus:active  {
@@ -183,20 +169,22 @@
         width: 100%;
         max-width: 1450px;
     }
+
+    .search-button:hover{
+        color: #000000;
+        border: 1px solid #000000;
+    }
 </style>
 
 <div style="display: grid;" class="custom-gradient">
     <div style="margin: 2rem 4rem;">
         <div class="d-flex justify-content-between align-items-center">
             <form action="/main" method="get">
-                <button class="btn btn-mainPage">
-                    <span>ервис для сравнения цен на маркетплейсах</span>
-                    C
-                </button>
+                <button class="btn btn-mainPage">Сервис для сравнения цен на маркетплейсах</button>
             </form>
 
             <div class="d-flex gap-2"> <!-- Контейнер для кнопок поиска и избранного -->
-                <button class="btn search-button" id="openSearch">
+                <button class="btn btn-search" id="openSearch">
                     <span>Искать</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
@@ -219,7 +207,7 @@
         <div id="searchPanel">
             <form action="/resultsSearch" method="post" onsubmit="showProgressBar()" class="search-form">
                 <input type="text" name="searchText" id="searchText" class="form-control search-bar" placeholder="Введите название товара">
-                <button type="submit" class="btn btn-search">
+                <button type="submit" class="btn search-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                     </svg>

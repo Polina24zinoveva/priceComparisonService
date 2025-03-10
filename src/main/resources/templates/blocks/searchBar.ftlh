@@ -37,7 +37,11 @@
 
     /* Прогресс бар */
     .progress {
+        background-color: #E6E6E6;
         height: 30px;
+    }
+
+    .progress-bar {
         background-color: #7f2f8d;
         background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
                           radial-gradient(at 82% 78%, hsla(58, 91%, 63%, 1) 0, hsla(58, 91%, 63%, 0) 50%),
@@ -45,10 +49,6 @@
                           radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
         background-size: 100% 300%; /* Растянем градиент по высоте */
         background-position: center top; /* Оставляем верхнюю часть */
-    }
-
-    .progress-bar {
-        background-color: #7FB77E;
         animation: progressAnimation 27s linear forwards;
     }
 
@@ -154,7 +154,7 @@
     }
 
 
-    .btn-search {
+    .search-button {
         width: 150px; /* Увеличиваем ширину кнопки при наведении */
         justify-content: flex-start; /* Иконка перемещается вправо */
         padding-left: 12px;
@@ -170,14 +170,18 @@
     }
 
     /* Стили при наведении */
-    .btn-search:hover {
-        border: 1px solid #2B2B2B;
-        color: #000000;
+    .search-button:hover,
+    .search-button:active,
+    .search-button:focus,{
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) !important;
+        color: #000000 !important;
+        border: none !important;
     }
 
-    input[type=text]:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-        border: none;
+    input[type=text]:hover,
+    input[type=text]:active{
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) !important;
+        border: none !important;
     }
 
 
