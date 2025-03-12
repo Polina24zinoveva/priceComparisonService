@@ -42,20 +42,33 @@
     }
 
     .progress-bar {
-        background-color: #7f2f8d;
-        background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
-                          radial-gradient(at 82% 78%, hsla(58, 91%, 63%, 1) 0, hsla(58, 91%, 63%, 0) 50%),
-                          radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
-                          radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
-        background-size: 100% 300%; /* Растянем градиент по высоте */
-        background-position: center top; /* Оставляем верхнюю часть */
-        animation: progressAnimation 27s linear forwards;
+        background: linear-gradient(90deg, #a864dd, #5c91fe, #ff9a66, #fa6252);
+        background-size: 200% 100%; /* Увеличиваем размер фона, чтобы градиент не растягивался */
+        background-repeat: no-repeat;
+        animation: progressAnimation 50s linear forwards, gradientMove 50s infinite linear;
     }
 
     @keyframes progressAnimation {
-        from { width: 0%; }
-        to { width: 100%; }
+        from {
+            width: 0%;
+            background-position: 100% 0; /* Начинаем с конца градиента */
+        }
+        to {
+            width: 100%;
+            background-position: 0 0; /* Градиент двигается влево, открывая новые цвета */
+        }
     }
+
+    @keyframes gradientMove {
+        0% {
+            background-position: 0 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+
 
     .loading-animation {
         position: relative;
@@ -101,10 +114,11 @@
         display: grid;
         background-color: #7f2f8d;
         background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
-        radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
-        radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
-        radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
+                          radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
+                          radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
+                          radial-gradient(at 90% 10%, hsla(0, 85%, 65%, 1) 0, hsla(0, 85%, 70%, 0) 50%);
     }
+
 
     .container-custom{
         margin: 2rem 4rem;

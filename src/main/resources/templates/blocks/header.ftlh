@@ -1,10 +1,10 @@
 <style>
     .custom-gradient {
-                background-color: #7f2f8d;
-                background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
-                radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
-                radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
-                radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
+        background-color: #7f2f8d;
+        background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
+                          radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
+                          radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
+                          radial-gradient(at 90% 10%, hsla(0, 85%, 65%, 1) 0, hsla(0, 85%, 70%, 0) 50%);
         background-size: 100% 300%; /* Растянем градиент по высоте */
         background-position: center top; /* Оставляем верхнюю часть */
     }
@@ -122,10 +122,10 @@
         width: 100%;
         height: 120px;
         background-color: #7f2f8d;
-        background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
-                          radial-gradient(at 82% 78%, hsla(58, 91%, 63%, 1) 0, hsla(58, 91%, 63%, 0) 50%),
-                          radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
-                          radial-gradient(at 67% 10%, hsla(324, 95%, 57%, 1) 0, hsla(324, 95%, 57%, 0) 50%);
+                background-image: radial-gradient(at 36% 24%, hsla(201, 88%, 63%, 1) 0, hsla(201, 88%, 63%, 0) 50%),
+                                  radial-gradient(at 82% 78%, hsla(30, 85%, 65%, 1) 0, hsla(30, 85%, 65%, 0) 50%),
+                                  radial-gradient(at 35% 89%, hsla(223, 90%, 67%, 1) 0, hsla(223, 90%, 67%, 0) 50%),
+                                  radial-gradient(at 90% 10%, hsla(0, 85%, 65%, 1) 0, hsla(0, 85%, 70%, 0) 50%);
         background-size: 100% 300%; /* Растянем градиент по высоте */
         background-position: center top; /* Оставляем верхнюю часть */
         display: none; /* Скрыто по умолчанию */

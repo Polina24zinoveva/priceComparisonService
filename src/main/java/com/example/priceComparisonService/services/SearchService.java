@@ -139,24 +139,41 @@ public class SearchService {
                         .replace("/ ", "");
 
                 // Цена
-                String priceText = item.findElement(By.cssSelector(".tsHeadline500Medium"))
-                        .getText()
-                        .replaceAll("[^\\d]", "");
-                int price = priceText.isEmpty() ? 0 : Integer.parseInt(priceText);
+                int price = 0;
+                try {
+                    String priceText = item.findElement(By.cssSelector(".tsHeadline500Medium"))
+                            .getText()
+                            .replaceAll("[^\\d]", "");
+                    price = priceText.isEmpty() ? 0 : Integer.parseInt(priceText);
+                }
+                catch (Exception e){
+                    log.info("У товара в Ozon нет цены");
+                    continue;
+                }
+
 
                 // Ссылка на товар
                 String url = item.findElement(By.cssSelector("a")).getAttribute("href");
 
-                // Рейтинг
-                String ratingText = item.findElements(By.xpath(".//span[contains(text(), '.')]")).getLast().getText().replaceAll(" ", "");
-                double rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
 
-                // Количество заказов
-                String countReviewsText = item.findElement(By.xpath(".//span[contains(text(), 'отзыв')]"))
-                        .getText()
-                        .split(" ")[0]
-                        .replaceAll("[^\\d]", "");
-                int countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                double rating = 0;
+                int countReviews = 0;
+                try {
+                    // Рейтинг
+                    String ratingText = item.findElements(By.xpath(".//span[contains(text(), '.')]")).getLast().getText().replaceAll(" ", "");
+                    rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
+
+                    // Количество заказов
+                    String countReviewsText = item.findElement(By.xpath(".//span[contains(text(), 'отзыв')]"))
+                            .getText()
+                            .split(" ")[0]
+                            .replaceAll("[^\\d]", "");
+                    countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                }
+                catch (Exception e){
+                    log.info("У товара в Ozon рейтинг и количество заказов не найдено");
+                }
+
 
                 // Фото
                 String imageUrl = item.findElements(By.xpath(".//img[contains(@src, '.jpg')]")).getFirst().getAttribute("src");
@@ -217,14 +234,21 @@ public class SearchService {
 
                 List<String> ratingAndCountReviews = List.of(item.findElement(By.className("orders")).getText().split("\n"));
 
-                // Рейтинг
-                String ratingText = ratingAndCountReviews.getFirst();
-                double rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
+                double rating = 0;
+                int countReviews = 0;
+                try {
+                    // Рейтинг
+                    String ratingText = ratingAndCountReviews.getFirst();
+                    rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
 
-                // Количество заказов
-                String countReviewsText = ratingAndCountReviews.get(1).split(" ")[0];
-                countReviewsText = countReviewsText.substring(1, countReviewsText.length());
-                int countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                    // Количество заказов
+                    String countReviewsText = ratingAndCountReviews.get(1).split(" ")[0];
+                    countReviewsText = countReviewsText.substring(1, countReviewsText.length());
+                    countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                }
+                catch (Exception e){
+                    log.info("У товара в Магнит Маркете рейтинг и количество заказов не найдено");
+                }
 
                 // Фото
                 String imageUrl = item.findElement(By.className("main-card-icon-and-classname-collision-made-to-minimum")).getAttribute("src");
@@ -292,15 +316,24 @@ public class SearchService {
                 int price = priceText.isEmpty() ? 0 : Integer.parseInt(priceText);
 
                 // Рейтинг
-                WebElement ratingElement = item.findElement(By.className("ds-text_color_text-rating"));
-                String ratingText = ratingElement.getText();
-                double rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
+                double rating = 0;
+                int countReviews = 0;
+                try{
+                    // Рейтинг
+                    WebElement ratingElement = item.findElement(By.className("ds-text_color_text-rating"));
+                    String ratingText = ratingElement.getText();
+                    rating = ratingText.isEmpty() ? 0 : Double.parseDouble(ratingText);
 
-                // Количество заказов
-                String countReviewsText = item.findElement(By.className("ds-text_color_text-secondary"))
-                        .getText()
-                        .split(" ")[0];
-                int countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                    // Количество заказов
+                    String countReviewsText = item.findElement(By.className("ds-text_color_text-secondary"))
+                            .getText()
+                            .split(" ")[0];
+                    countReviews = countReviewsText.isEmpty() ? 0 : Integer.parseInt(countReviewsText);
+                }
+                catch (Exception e){
+                    log.info("У товара в Яндекс Маркете рейтинг и количество заказов не найдено");
+                }
+
 
                 Card card = new Card(name, "Яндекс Маркет", url, price, rating, countReviews, imageUrl, false);
                 cards.add(card);

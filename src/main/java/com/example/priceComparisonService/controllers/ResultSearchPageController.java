@@ -87,7 +87,7 @@ public class ResultSearchPageController {
         }
 
         // Выполнение задач параллельно
-        ExecutorService executor = Executors.newFixedThreadPool(tasks.size());
+        ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
             List<Future<Void>> futures = executor.invokeAll(tasks);
             for (Future<Void> future : futures) {

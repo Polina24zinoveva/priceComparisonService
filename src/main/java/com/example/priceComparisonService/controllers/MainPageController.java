@@ -15,11 +15,11 @@ public class MainPageController {
 
     @GetMapping("/")
     public String startPage(Model model) throws IOException {
-        return "main2";
+        return "main";
     }
 
     @GetMapping("/main")
     public String mainPage(Model model) throws IOException {
-        return "main2";
+        return "main";
     }
 }

@@ -14,37 +14,11 @@
 
     <style>
 
-        /* Прогресс бар */
-        .progress {
-            height: 20px;
-            background-color: #E0F1EC;
-            margin-bottom: 1rem;
-        }
-
-        .progress-bar {
-            background-color: #01796F;
-        }
-
-        .progress-bar-long {
-            background-color: #01796F;
-        }
-
-        @keyframes progressAnimation10s {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-
-        @keyframes progressAnimation30s {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-
-        .progress-bar.animation-10s {
-            animation: progressAnimation10s 10s linear forwards;
-        }
-
-        .progress-bar.animation-30s {
-            animation: progressAnimation30s 30s linear forwards;
+        .progress-bar10 {
+            background: linear-gradient(90deg, #a864dd, #5c91fe, #ff9a66, #fa6252);
+            background-size: 200% 100%; /* Увеличиваем размер фона, чтобы градиент не растягивался */
+            background-repeat: no-repeat;
+            animation: progressAnimation 11s linear forwards, gradientMove 11s infinite linear;
         }
 
 
@@ -132,70 +106,56 @@
     </style>
 </head>
 <script>
-    function showProgressBar(duration) {
-        var myModal = new bootstrap.Modal(document.getElementById('progressModal'), {
+    function show10SecProgressBar() {
+        var myModal = new bootstrap.Modal(document.getElementById('progressModal10'), {
             backdrop: 'static',  // Не закрывается при клике вне модального окна
             keyboard: false      // Не закрывается при нажатии клавиши Escape
         });
         myModal.show();
 
-        // Найдите элементы прогресс-баров
-        var progress10Sec = document.querySelector('#progress10Sec .progress-bar');
-        var progress30Sec = document.querySelector('#progress30Sec .progress-bar');
+        // Находим элемент прогресс-бара
+        var progressBar = document.querySelector('.progress-bar10');
 
-        // Установите начальные ширины (0%)
-        progress10Sec.style.width = '0%';
-        progress30Sec.style.width = '0%';
+        // Устанавливаем начальную ширину (0%)
+        progressBar.style.width = '0%';
 
-        // Удалите любые предыдущие анимации
-        progress10Sec.classList.remove('animation-10s');
-        progress30Sec.classList.remove('animation-30s');
+        // Анимация смены текста
+        var texts = ["Обрабатываем ваш запрос", "Формируем запрос", "Проверяем цены на маркетплейсах",
+         "Ищем лучшие предложения для вас", "Сравниваем и выбираем лучшие товары"];
+        var textIndex = 0;
+        var changingText = document.getElementById('changing-text');
 
-        // Запустите нужную анимацию в зависимости от длительности
-        if (duration === 10) {
-            progress10Sec.classList.add('animation-10s');
-        } else if (duration === 30) {
-            progress30Sec.classList.add('animation-30s');
-        }
+        setInterval(function() {
+            textIndex = (textIndex + 1) % texts.length;
+            changingText.textContent = texts[textIndex];
+        }, 4000); // Меняет текст каждые 2 секунды
+
+        marketplaces
     }
-
-    function show10SecProgressBar() {
-        document.getElementById("progress-container-long").style.display = "none"
-        document.getElementById("progress-container-short").style.display = "block"
-        showProgressBar(10);
-    }
-
-    function show30SecProgressBar() {
-        document.getElementById("progress-container-short").style.display = "none"
-        document.getElementById("progress-container-long").style.display = "block"
-
-        showProgressBar(30);
-    }
-
-
 
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function showMessage(message) {
         Swal.fire({
           text: message,
           icon: "success",
-          confirmButtonColor: '#7FB77E'
+          confirmButtonColor: '#676767'
         });
     }
     function showWarning(warning) {
         Swal.fire({
           text: warning,
           icon: "warning",
-          confirmButtonColor: '#7FB77E'
+          confirmButtonColor: '#676767'
         });
     }
     function showError(error) {
         Swal.fire({
           text: error,
           icon: "error",
-          confirmButtonColor: '#7FB77E'
+          confirmButtonColor: '#676767'
         });
     }
 </script>
@@ -249,7 +209,7 @@
                                                    <#if card.cardMarketplace == "Магнит Маркет">#FA6252;</#if>
                                                 ">
                                                 ${card.cardMarketplace}</h4>
-                                                <p style="font-size: 20px; font-weight: 480; color: #595c5f;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Цена не является актуальной. Рекомендуем проверить цену, для получения актуальной информации"> ${card.cardPrice} ₽</p>
+                                                <p style="font-size: 20px; font-weight: 480; color: #595c5f;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Рекомендуем проверить цену, для получения актуальной информации"> ${card.cardPrice} ₽</p>
                                             </div>
                                             <div class="name">
                                                 <a href="${card.cardUrl}" class="custom-link">${card.cardName}</a>
@@ -288,7 +248,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="/resultsSearch" method="post" onsubmit="show30SecProgressBar()">
+                                        <form action="/resultsSearch" method="post" onsubmit="showProgressBar()">
                                             <input type="hidden" name="searchText" value="${card.cardSearchText}">
                                             <button class="btn btn-card" type="submit">
                                                 <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
@@ -329,23 +289,40 @@
                         </#list>
                     </div>
 
-                    <!-- Модальное окно с двумя прогресс-барами -->
+                    <!-- Модальное окно с прогресс-баром а 10 сек -->
+                    <div class="modal fade" id="progressModal10" tabindex="-1" aria-labelledby="progressModal10Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="header-content">
+                                        <h4 class="modal-title" id="progressModal10Label">Загрузка...</h4>
+                                        <p id="changing-text" class="changing-text">Обрабатываем ваш запрос</p>
+                                    </div>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="progress">
+                                        <div class="progress-bar10" role="progressbar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Модальное окно с прогресс-баром на 50 сек -->
                     <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="progressModalLabel">Загрузка...</h5>
-                                </div>
-                                <div class="modal-body">
-                                    <div id="progress-container-short" class="progress-container-short">
-                                        <div class="progress" id="progress10Sec">
-                                            <div class="progress-bar" role="progressbar"></div>
-                                        </div>
+                                    <div class="header-content">
+                                        <h4 class="modal-title" id="progressModalLabel">Загрузка...</h4>
+                                        <p id="changing-text" class="changing-text">Обрабатываем ваш запрос</p>
                                     </div>
-                                    <div id="progress-container-long" class="progress-container-long">
-                                        <div class="progress" id="progress30Sec">
-                                            <div class="progress-bar progress-bar-long" role="progressbar"></div>
-                                        </div>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"></div>
                                     </div>
                                 </div>
                             </div>

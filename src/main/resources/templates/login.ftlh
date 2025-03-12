@@ -223,7 +223,7 @@
         Swal.fire({
             text: message,
             icon: "success",
-            confirmButtonColor: '#7FB77E'
+            confirmButtonColor: '#676767'
         });
     }
 
@@ -231,7 +231,7 @@
         Swal.fire({
             text: warning,
             icon: "warning",
-            confirmButtonColor: '#7FB77E'
+            confirmButtonColor: '#676767'
         });
     }
 
@@ -239,7 +239,7 @@
         Swal.fire({
             text: error,
             icon: "error",
-            confirmButtonColor: '#7FB77E'
+            confirmButtonColor: '#676767'
         });
     }
 </script>
