@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="icon" href="diploma_icon.png" type="image/x-icon">
+    <link rel="icon" href="icon.png" type="image/x-icon">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -151,6 +151,40 @@
           confirmButtonColor: '#676767'
         });
     }
+    function showWarningCheck(warningCheck, idFavorite) {
+        if (!idFavorite) {
+            console.error("idFavorite не передан!");
+            Swal.fire("Ошибка!", "ID товара не найден", "error");
+            return;
+        }
+
+        Swal.fire({
+            title: warningCheck,
+            text: "Удалить товар из избранного?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#676767",
+            cancelButtonColor: "#000000",
+            confirmButtonText: "Удалить",
+            cancelButtonText: "Отмена"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteFavorite(idFavorite);
+            }
+        });
+    }
+    function deleteFavorite(idFavorite) {
+        fetch("/deleteFavoriteAfterCheckPrice", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "idFavorite=" + encodeURIComponent(idFavorite)
+        }).then(response => {
+            window.location.href = "favorites";
+        })
+    }
+
     function showError(error) {
         Swal.fire({
           text: error,
@@ -168,6 +202,11 @@
     <#if warning??>
         <script>
             showWarning("${warning}");
+        </script>
+    </#if>
+    <#if warningCheck??>
+        <script>
+            showWarningCheck("${warningCheck}", "${idFavorite}");
         </script>
     </#if>
     <#if error??>
@@ -237,6 +276,7 @@
 
                                         <form action="/checkPrice" method="post" onsubmit="show10SecProgressBar()">
                                             <input type="hidden" name="url" value="${card.cardUrl}">
+                                            <input type="hidden" name="idFavorite" value="${card.id}">
                                             <input type="hidden" name="marketplace" value="${card.cardMarketplace}">
                                             <button class="btn btn-card" type="submit">
                                                 <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">

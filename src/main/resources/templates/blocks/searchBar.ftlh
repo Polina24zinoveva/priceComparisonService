@@ -42,7 +42,7 @@
     }
 
     .progress-bar {
-        background: linear-gradient(90deg, #a864dd, #5c91fe, #ff9a66, #fa6252);
+        background: linear-gradient(90deg, #a864dd, #5c91fe, #ff9a66, #f85340);
         background-size: 200% 100%; /* Увеличиваем размер фона, чтобы градиент не растягивался */
         background-repeat: no-repeat;
         animation: progressAnimation 50s linear forwards, gradientMove 50s infinite linear;

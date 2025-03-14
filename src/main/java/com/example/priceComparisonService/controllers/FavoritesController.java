@@ -41,6 +41,7 @@ public class FavoritesController {
     public String favoritesPage(HttpSession session, @AuthenticationPrincipal User user, Model model) {
         List<Favorite> favoritesList = favoritesRepository.findByUser(user);
         model.addAttribute("cards", favoritesList);
+        if(model.getAttribute("idFavorite") == null) model.addAttribute("idFavorite", -1);
         // Сохранение результатов поиска в сессии
         session.setAttribute("searchResultsFavorites", favoritesList);
 
@@ -58,11 +59,14 @@ public class FavoritesController {
         return "favorites";
     }
 
+
     @PostMapping("/checkPrice")
     //@PreAuthorize("isAuthenticated()")
-    public String checkPrice(HttpSession session, Model model,
+    public String checkPrice(HttpSession session,
                              @RequestParam(name = "marketplace") String marketplace,
-                             @RequestParam(name = "url") String url) throws IOException {
+                             @RequestParam(name = "url") String url,
+                             @RequestParam(name = "idFavorite") Long idFavorite,
+                             RedirectAttributes redirectAttributes) throws IOException {
         Card checkedCard = new Card();
         Favorite checkedFavorite = new Favorite();
         try {
@@ -83,16 +87,19 @@ public class FavoritesController {
             }
 
             if (checkedCard == null){
-                model.addAttribute("warning", "Произошла ошибка. Возможно товар закончился или был удален");
+                redirectAttributes.addFlashAttribute("warningCheck", "Произошла ошибка. Возможно товар закончился или был удален");
+                checkedFavorite = favoritesRepository.findById(idFavorite).orElse(null);
+                redirectAttributes.addFlashAttribute("idFavorite", checkedFavorite != null? checkedFavorite.getId(): -1);
             }
             else {
-                model.addAttribute("message", "Цена обновлена");
+                redirectAttributes.addFlashAttribute("message", "Цена обновлена");
+                redirectAttributes.addFlashAttribute("idFavorite", -1);
             }
 
             ArrayList<Favorite> cards = (ArrayList<Favorite>) session.getAttribute("searchResultsFavorites");
 
             if (cards != null && checkedCard != null) {
-                checkedFavorite = favoritesRepository.findByCardUrl(checkedCard.getUrl());
+                checkedFavorite = favoritesRepository.findById(idFavorite).orElse(null);
                 checkedFavorite.setCardPrice(checkedCard.getPrice());
                 checkedFavorite.setCardRating(checkedCard.getRating());
                 checkedFavorite.setCardCountReviews(checkedCard.getCountReviews());
@@ -110,13 +117,13 @@ public class FavoritesController {
                         checkedFavorite.getCardCountReviews(), checkedFavorite.getCardImageUrl());
                 log.info("Внесены изменения в БД");
             }
-            model.addAttribute("cards", cards);
+            redirectAttributes.addFlashAttribute("cards", cards);
             session.setAttribute("searchResultsFavorites", cards);
 
         } catch (Exception e){
             e.printStackTrace();
         }
-        return "favorites";
+        return "redirect:/favorites";
     }
 
     @PostMapping("/deleteFavorite")
@@ -140,6 +147,29 @@ public class FavoritesController {
             session.setAttribute("warning", "Произошла ошибка. Не удалось удалить товар");
         }
         return "redirect:/favorites";
+    }
+
+    @PostMapping("/deleteFavoriteAfterCheckPrice")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteFavoriteAfterCheckPrice(HttpSession session, @AuthenticationPrincipal User user,
+                                 @RequestParam(name = "idFavorite") Long idFavorite, Model model){
+        try {
+            favoritesRepository.deleteById(idFavorite);
+            log.info("Message: Успешно удалено из избранного");
+
+            List<Card> cards = (List<Card>) session.getAttribute("searchResultsFavorites");
+
+            ArrayList<Favorite> favorites = (ArrayList<Favorite>) favoritesRepository.findByUser(user);
+
+            model.addAttribute("cards", favorites);
+            session.setAttribute("searchResultsFavorites", favorites);
+            session.setAttribute("message", "Товар успешно удален из избранного");
+
+        }
+        catch (Exception e){
+            session.setAttribute("warning", "Произошла ошибка. Не удалось удалить товар");
+        }
+        return "favorites";
     }
 
     @PostMapping("/removeFromFavoritesInResultSearchPage")

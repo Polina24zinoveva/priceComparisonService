@@ -27,7 +27,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/main", "/resultsSearch", "/filters", "/registration",
                                 "/login", "/sortByDefault", "/sortPopular", "/sortRating", "/sortPriseAsc", "/sortPriseDesc",
-                                "wb.png", "ozon.png", "diploma_icon.png", "/deleteFilter")
+                                "wb.png", "ozon.png", "diploma_icon.png","icon.png", "/deleteFilter")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
