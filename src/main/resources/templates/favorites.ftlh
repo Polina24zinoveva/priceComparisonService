@@ -18,7 +18,7 @@
             background: linear-gradient(90deg, #a864dd, #5c91fe, #ff9a66, #fa6252);
             background-size: 200% 100%; /* Увеличиваем размер фона, чтобы градиент не растягивался */
             background-repeat: no-repeat;
-            animation: progressAnimation 11s linear forwards, gradientMove 11s infinite linear;
+            animation: progressAnimation 15s linear forwards, gradientMove 15s infinite linear;
         }
 
 
@@ -174,7 +174,7 @@
         });
     }
     function deleteFavorite(idFavorite) {
-        fetch("/deleteFavoriteAfterCheckPrice", {
+        fetch("/deleteFavorite", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

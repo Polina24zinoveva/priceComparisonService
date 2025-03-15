@@ -215,6 +215,14 @@ public class SearchService {
             // Ожидание загрузки результатов
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("ui-card")));
 
+            for (WebElement element: driver.findElements(By.className("title")))
+            {
+                if (element.getText().equals("Мы не нашли то, что вы искали")){
+                    log.info("Магнит маркет: Мы не нашли то, что вы искали");
+                    return;
+                }
+            }
+
             // Повторное получение элементов
             List<WebElement> productItems = driver.findElements(By.className("ui-card"));
 
@@ -419,7 +427,7 @@ public class SearchService {
             String name = webElement.findElement(By.cssSelector(".tsHeadline550Medium")).getText();
 
             // Цена
-            String priceText = driver.findElement(By.xpath("//span[contains(text(), '₽')]"))
+            String priceText = driver.findElement(By.xpath("//*[@id=\"layoutPage\"]/div[1]/div[3]/div[3]/div[2]/div/div/div[1]/div[3]/div/div[1]/div/div/div[1]/div[2]/div/div[1]/span[1]"))
                     .getText()
                     .replaceAll("[^\\d]", "")
                     .replaceAll("₽", "");

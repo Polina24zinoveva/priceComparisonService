@@ -196,12 +196,13 @@
 
         .signup label{
             padding-top: 5px;
-            color: #EA9E5F;
+            color: #E4AB8D;
             transform: scale(.6);
         }
 
-        .signup .custom-button:hover{
-            background: #ffffff;
+        .signup .custom-button{
+            background: #E4AB8D;
+            border: 2px solid #E4AB8D;
         }
 
         #chk:checked ~ .signup{
@@ -216,7 +217,6 @@
 
     </style>
 </head>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function showMessage(message) {
@@ -225,6 +225,7 @@
             icon: "success",
             confirmButtonColor: '#676767'
         });
+        uncheck();
     }
 
     function showWarning(warning) {
@@ -243,6 +244,7 @@
         });
     }
 </script>
+
 <script>
     // Функция для проверки, находится ли элемент внутри другого элемента
     function isClickOutside(element, target) {
@@ -298,15 +300,38 @@
             </div>
 
             <div class="signup">
-                <form action="/registration" method="post">
+                <form action="/registration" method="post" id="registrationForm">
                     <label for="chk" aria-hidden="true" style="margin-bottom:0; padding-bottom:0">Регистрация</label>
                     <div class="signup-input-container" style="margin-top:10px; padding-top:0">
-                        <input type="email" id="email" name="email" placeholder="Email" required>
-                        <input type="password" id="password" name="password" placeholder="Пароль" required>
+                        <input type="email" id="emailReg" name="email" placeholder="Email" autocomplete="off" required
+                               minlength="5" maxlength="64">
+
+                        <input type="password" id="password1" name="password" placeholder="Пароль" required
+                               minlength="6" maxlength="20">
+
                         <input type="password" id="password2" name="password2" placeholder="Повтор пароля" required>
-                        <button class="custom-button">Зарегистрироваться</button>
+                        <button class="custom-button" onclick="validatePasswords()">Зарегистрироваться</button>
                     </div>
                 </form>
+                <script>
+                    function validatePasswords() {
+                        let email = document.getElementById("emailReg").value;
+                        let password1 = document.getElementById("password1").value;
+                        let password2 = document.getElementById("password2").value;
+
+                        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        if (!emailPattern.test(email)) {
+                            alert("Введите корректный email (например, example@domain.com)");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        if (password1 !== password2) {
+                            alert("Пароли не совпадают. Попробуйте еще раз");
+                            event.preventDefault();
+                        }
+                    }
+                </script>
             </div>
         </div>
     </div>
