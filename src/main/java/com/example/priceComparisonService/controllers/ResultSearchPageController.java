@@ -24,7 +24,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Controller
 public class ResultSearchPageController {
 
@@ -32,6 +31,16 @@ public class ResultSearchPageController {
     SearchService searchService;
     UserService userService;
     FavoritesRepository favoritesRepository;
+
+    private List<Future<Void>> futures = new ArrayList<>(); // Список для хранения Future
+    private ExecutorService executor;
+
+    public ResultSearchPageController(SearchService searchService, UserService userService, FavoritesRepository favoritesRepository, List<Future<Void>> futures) {
+        this.searchService = searchService;
+        this.userService = userService;
+        this.favoritesRepository = favoritesRepository;
+        this.futures = futures;
+    }
 
 
     @PostMapping("/resultsSearch")
@@ -86,10 +95,17 @@ public class ResultSearchPageController {
             });
         }
 
+        // Очистка предыдущих задач
+        if (executor != null) {
+            executor.shutdownNow(); // Завершаем предыдущий пул потоков
+        }
+        executor = Executors.newFixedThreadPool(2); // Создаем новый пул потоков
+
+        futures.clear(); // Очистка списка задач
+
         // Выполнение задач параллельно
-        ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
-            List<Future<Void>> futures = executor.invokeAll(tasks);
+            futures = executor.invokeAll(tasks); // Сохраняем Future в список
             for (Future<Void> future : futures) {
                 try {
                     future.get(); // Ожидание выполнения каждой задачи
@@ -98,9 +114,10 @@ public class ResultSearchPageController {
                 }
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("Поток был прерван", e);
+            Thread.currentThread().interrupt(); // Восстанавливаем статус прерывания
         } finally {
-            executor.shutdown();
+            executor.shutdown(); // Завершаем пул потоков после выполнения задач
         }
 
         // Установка атрибутов в сессии
@@ -130,6 +147,19 @@ public class ResultSearchPageController {
         sortByDefault(session, model);
 
         return "resultsSearch";
+    }
+
+    @PostMapping("/stopLoading")
+    public String stopLoading() {
+        // Отменяем выполнение всех текущих задач
+        futures.forEach(future -> future.cancel(true));
+        futures.clear(); // Очистка списка задач
+
+        if (executor != null) {
+            executor.shutdownNow(); // Завершаем пул потоков
+        }
+
+        return "redirect:/main"; // Перенаправляем на главную страницу
     }
 
 //    @PostMapping("/resultsSearch")
@@ -583,5 +613,4 @@ public class ResultSearchPageController {
 
         model.addAttribute("searchText", session.getAttribute("searchText"));
     }
-
 }

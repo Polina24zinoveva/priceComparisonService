@@ -101,6 +101,14 @@
             font-size: 18px;
         }
 
+        .aTitle{
+            font-size: 34px;
+            text-decoration:none;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: black
+        }
+
 
         <#include "blocks/searchBar.ftlh">
     </style>
@@ -226,7 +234,7 @@
                     </div>
                 <#else>
                     <div class="searchText">
-                        <p style="font-size: 34px; text-transform: uppercase; font-weight: bold;">Избранные товары</p>
+                        <a href="/favorites" class="aTitle">Избранные товары</a>
                     </div>
                     <div class="row">
                         <#list cards as card>
@@ -274,7 +282,7 @@
                                             </div>
                                         </div>
 
-                                        <form action="/checkPrice" method="post" onsubmit="show10SecProgressBar()">
+                                        <form action="/checkPrice" method="post" onsubmit="showProgressBar(10)">
                                             <input type="hidden" name="url" value="${card.cardUrl}">
                                             <input type="hidden" name="idFavorite" value="${card.id}">
                                             <input type="hidden" name="marketplace" value="${card.cardMarketplace}">
@@ -288,7 +296,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="/resultsSearch" method="post" onsubmit="showProgressBar()">
+                                        <form action="/resultsSearch" method="post" onsubmit="showProgressBar(52)">
                                             <input type="hidden" name="searchText" value="${card.cardSearchText}">
                                             <button class="btn btn-card" type="submit">
                                                 <div class="d-flex align-items-center justify-content-center" style="margin-right:1rem;">
@@ -327,46 +335,6 @@
                                 </div>
                             </div>
                         </#list>
-                    </div>
-
-                    <!-- Модальное окно с прогресс-баром а 10 сек -->
-                    <div class="modal fade" id="progressModal10" tabindex="-1" aria-labelledby="progressModal10Label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="header-content">
-                                        <h4 class="modal-title" id="progressModal10Label">Загрузка...</h4>
-                                        <p id="changing-text" class="changing-text">Обрабатываем ваш запрос</p>
-                                    </div>
-                                </div>
-
-                                <div class="modal-body">
-                                    <div class="progress">
-                                        <div class="progress-bar10" role="progressbar"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Модальное окно с прогресс-баром на 50 сек -->
-                    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="header-content">
-                                        <h4 class="modal-title" id="progressModalLabel">Загрузка...</h4>
-                                        <p id="changing-text" class="changing-text">Обрабатываем ваш запрос</p>
-                                    </div>
-                                </div>
-
-                                <div class="modal-body">
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </#if>
             <#else>

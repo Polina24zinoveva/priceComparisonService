@@ -25,7 +25,7 @@ public class SecurityConfig{
                 .cors().disable()
                 .csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/main", "/resultsSearch", "/filters", "/registration",
+                        .requestMatchers("/", "/main", "/resultsSearch", "/filters", "/registration", "/stopLoading",
                                 "/login", "/sortByDefault", "/sortPopular", "/sortRating", "/sortPriseAsc", "/sortPriseDesc",
                                 "wb.png", "ozon.png", "diploma_icon.png","icon.png", "/deleteFilter")
                         .permitAll()
